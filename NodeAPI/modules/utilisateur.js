@@ -6,7 +6,6 @@ module.exports = function (app, db) {
     const prenom = req.body.prenom;
     const nom = req.body.nom;
     const pseudo = req.body.pseudo;
-    const adresse = req.body.adresse;
     const mot_passe = req.body.mot_passe;
     const role = req.body.role;
 
@@ -18,8 +17,8 @@ module.exports = function (app, db) {
       }
 
       db.query(
-        "INSERT INTO utilisateur (prenom, nom, pseudo, adresse, mot_passe, id_role) VALUES (?,?,?,?,?,?)",
-        [prenom, nom, pseudo, adresse, hash, role],
+        "INSERT INTO utilisateur (prenom, nom, pseudo, mot_passe, id_role) VALUES (?,?,?,?,?)",
+        [prenom, nom, pseudo, hash, role],
         (err, result) => {
           if (err) {
             res.send({ err: err });
