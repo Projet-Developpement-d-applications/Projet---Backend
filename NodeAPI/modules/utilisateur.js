@@ -7,7 +7,7 @@ module.exports = function (app, db) {
     const nom = req.body.nom;
     const pseudo = req.body.pseudo;
     const mot_passe = req.body.mot_passe;
-    const role = req.body.role;
+    const role = 2;
 
     bcrypt.hash(mot_passe, saltRounds, (err, hash) => {
       if (err) {
