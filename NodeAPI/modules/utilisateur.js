@@ -1,0 +1,85 @@
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
+
+module.exports = function (app, db) {
+  app.post("/inscription", (req, res) => {
+    const prenom = req.body.prenom;
+    const nom = req.body.nom;
+    const pseudo = req.body.pseudo;
+    const adresse = req.body.adresse;
+    const mot_passe = req.body.mot_passe;
+    const role = req.body.role;
+
+    bcrypt.hash(mot_passe, saltRounds, (err, hash) => {
+      if (err) {
+        console.log(err);
+        res.send(err);
+        return;
+      }
+
+      db.query(
+        "INSERT INTO utilisateur (prenom, nom, pseudo, adresse, mot_passe, id_role) VALUES (?,?,?,?,?,?)",
+        [prenom, nom, pseudo, adresse, hash, role],
+        (err, result) => {
+          if (err) {
+            res.send({ err: err });
+            return;
+          }
+
+          if (result.affectedRows > 0) {
+            res.send("Utilisateur créé avec succès!")
+          }
+        }
+      );
+    });
+  });
+
+  app.get("/connexion", (req, res) => {
+    if (req.session.user) {
+      res.send({ loggedIn: true, user: req.session.user });
+    } else {
+      res.send({ loggedIn: false });
+    }
+  });
+
+  app.post("/connexion", (req, res) => {
+    const pseudo = req.body.pseudo;
+    const mot_passe = req.body.mot_passe;
+
+    db.query(
+      "SELECT * FROM utilisateur WHERE pseudo = ?;",
+      [pseudo],
+      (err, result) => {
+        if (err) {
+          res.send({ err: err });
+          return;
+        }
+
+        if (result.length > 0) {
+          bcrypt.compare(mot_passe, result[0].mot_passe, (error, response) => {
+            if (response) {
+              req.session.user = result;
+              console.log(req.session.user[0].pseudo + " connecté!");
+              res.status(200).send("Connecté avec succès!");
+            } else {
+              res.send({ message: "Mauvaise combination de pseudo et de mot de passe!" });
+            }
+          });
+        } else {
+          res.send({ message: "Cet utilisateur n'existe pas." });
+        }
+      }
+    );
+  });
+
+  app.post("/disconnect", (req, res) => {
+    req.session.destroy();
+
+    if (!req.session) {
+      res.clearCookie("sessionID");
+      res.status(200).send("Déconnecté avec succès!");
+    } else {
+      res.status(500).send("Une erreur est survenue durant la requête.");
+    }
+  });
+}
