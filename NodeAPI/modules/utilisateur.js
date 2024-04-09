@@ -9,28 +9,47 @@ module.exports = function (app, db) {
     const mot_passe = req.body.mot_passe;
     const role = 2;
 
-    bcrypt.hash(mot_passe, saltRounds, (err, hash) => {
-      if (err) {
-        console.log(err);
-        res.send(err);
-        return;
-      }
+    // Check if pseudo already exists
+    db.query(
+      "SELECT * FROM utilisateur WHERE pseudo = ?",
+      [pseudo],
+      (err, results) => {
+        if (err) {
+          res.send({ err: err });
+          return;
+        }
 
-      db.query(
-        "INSERT INTO utilisateur (prenom, nom, pseudo, mot_passe, id_role) VALUES (?,?,?,?,?)",
-        [prenom, nom, pseudo, hash, role],
-        (err, result) => {
+        if (results.length > 0) {
+          // Pseudo already exists, return an error
+          res.send({message:"Le pseudo existe déjà."});
+          return;
+        }
+
+        // Pseudo doesn't exist, proceed with user creation
+        bcrypt.hash(mot_passe, saltRounds, (err, hash) => {
           if (err) {
-            res.send({ err: err });
+            console.log(err);
+            res.send(err);
             return;
           }
 
-          if (result.affectedRows > 0) {
-            res.send("Utilisateur créé avec succès!")
-          }
-        }
-      );
-    });
+          db.query(
+            "INSERT INTO utilisateur (prenom, nom, pseudo, mot_passe, id_role) VALUES (?,?,?,?,?)",
+            [prenom, nom, pseudo, hash, role],
+            (err, result) => {
+              if (err) {
+                res.send({ err: err });
+                return;
+              }
+
+              if (result.affectedRows > 0) {
+                res.send("Utilisateur créé avec succès!");
+              }
+            }
+          );
+        });
+      }
+    );
   });
 
   app.get("/connexion", (req, res) => {
@@ -61,7 +80,7 @@ module.exports = function (app, db) {
               console.log(req.session.user[0].pseudo + " connecté!");
               res.status(200).send("Connecté avec succès!");
             } else {
-              res.send({ message: "Mauvaise combination de pseudo et de mot de passe!" });
+              res.send({ message: "Mauvais mot de passe!" });
             }
           });
         } else {
