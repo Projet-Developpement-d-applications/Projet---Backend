@@ -15,8 +15,8 @@ app.use(cookieParser());
 const db = mysql.createConnection({
   host: "mysql-bd-projet-dev-app.a.aivencloud.com",
   database: "projetbd",
-  user: "avnadmin",
-  password: "AVNS_9EfKyeixN-RfjSoh1W1",
+  user: "projetadmin",
+  password: "AVNS_py8jL8Jck7oibOhFn42",
   port: 21790,
 });
 
