@@ -24,7 +24,7 @@ const db = mysql.createConnection({
 // to change
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://app-web2-tp2.vercel.app", /\.nercolive\.site$/],
+    origin: ["http://localhost:3000", "https://projet-web-acac.vercel.app", /\.nercolive\.site$/],
     methods: ["GET", "POST", "HEAD"],
     credentials: true,
     httpOnly: false
