@@ -35,9 +35,9 @@ app.use(
 app.use(
   session({                     // initialise la session
     key: "sessionID",              // nom du cookie
-    secret: "project_cookie",         // utilisé pour hasché l'id de session
+    secret: "projectcookie",         // utilisé pour hasché l'id de session
     resave: false,              // "L'option resave détermine si la session doit être enregistrée à nouveau à chaque fois que la page est chargée. Si resave est réglé sur false, cela signifie que la session ne sera pas sauvegardée à nouveau à moins qu'il y ait eu des modifications apportées à la session pendant la demande. Cela peut être utile pour améliorer les performances, car cela évite de sauvegarder la session à chaque requête, ce qui peut être coûteux en termes de ressources serveur." ChatGPT
-    saveUninitialized: true,   // "L'option saveUninitialized détermine si une session non initialisée doit être enregistrée dans le store. Une session est considérée comme non initialisée si elle n'a pas été modifiée depuis sa création. Si saveUninitialized est réglé sur false, cela signifie que les sessions qui n'ont pas été modifiées (par exemple, en ajoutant des données à la session) ne seront pas enregistrées dans le store. Cela peut être utile pour économiser de l'espace de stockage et éviter de créer des sessions inutiles pour les utilisateurs qui visitent votre site sans effectuer d'action qui nécessite une session." ChatGPt
+    saveUninitialized: false,   // "L'option saveUninitialized détermine si une session non initialisée doit être enregistrée dans le store. Une session est considérée comme non initialisée si elle n'a pas été modifiée depuis sa création. Si saveUninitialized est réglé sur false, cela signifie que les sessions qui n'ont pas été modifiées (par exemple, en ajoutant des données à la session) ne seront pas enregistrées dans le store. Cela peut être utile pour économiser de l'espace de stockage et éviter de créer des sessions inutiles pour les utilisateurs qui visitent votre site sans effectuer d'action qui nécessite une session." ChatGPt
     cookie: {                   //
       sameSite: "lax",
       //secure: true,
