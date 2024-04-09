@@ -9,7 +9,7 @@ module.exports = function (app, db) {
     const mot_passe = req.body.mot_passe;
     const role = 2;
 
-    // Check if pseudo already exists
+    // Regarde si le pseudo est deja existant
     db.query(
       "SELECT * FROM utilisateur WHERE pseudo = ?",
       [pseudo],
@@ -20,12 +20,12 @@ module.exports = function (app, db) {
         }
 
         if (results.length > 0) {
-          // Pseudo already exists, return an error
+          // S'il existe deja renvoie un message d'erreur
           res.send({message:"Le pseudo existe déjà."});
           return;
         }
 
-        // Pseudo doesn't exist, proceed with user creation
+        // S'il n'existe pas créé le compte
         bcrypt.hash(mot_passe, saltRounds, (err, hash) => {
           if (err) {
             console.log(err);
