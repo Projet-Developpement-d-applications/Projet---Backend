@@ -58,5 +58,5 @@ jobs:
         with:
           app-name: 'conquerants'
           slot-name: 'Production'
-          package: 'conquerants/*.war'
+          package: '*.war'
           
