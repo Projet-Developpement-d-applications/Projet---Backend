@@ -1,9 +1,13 @@
 package projet.conquerants.Controller;
 
+import projet.conquerants.Model.Equipe;
+import projet.conquerants.Model.Joueur;
 import projet.conquerants.Model.RegisterRequest;
 import projet.conquerants.Model.Utilisateur;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static projet.conquerants.Util.PasswordHashUtil.hashPassword;
 
@@ -76,6 +80,271 @@ public class DatabaseController {
 
         return result;
     }
+
+    public List<Equipe> getTeamByGame(Equipe teamRequest) {
+        String sql = "SELECT * FROM equipe WHERE id_jeu = ? AND id_saison = ?";
+        List<Equipe> result = new ArrayList<>();
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection(url, user, password);
+
+            PreparedStatement dec = connection.prepareStatement(sql);
+            dec.setInt(1, teamRequest.getId_jeu());
+            dec.setInt(2, teamRequest.getId_saison());
+
+            ResultSet resultSet = dec.executeQuery();
+            while (resultSet.next()) {
+                result.add(new Equipe(
+                        resultSet.getInt("id"),
+                        resultSet.getString("nom"),
+                        resultSet.getInt("division"),
+                        resultSet.getInt("id_jeu"),
+                        resultSet.getInt("id_saison")
+                ));
+            }
+
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+        return result;
+    }
+
+    public Equipe getTeamByName(Equipe teamRequest) {
+        String sql = "SELECT * FROM equipe WHERE nom = ? AND id_jeu = ? AND id_saison = ?";
+        Equipe result = null;
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection(url, user, password);
+
+            PreparedStatement dec = connection.prepareStatement(sql);
+            dec.setString(1, teamRequest.getNom());
+            dec.setInt(2, teamRequest.getId_jeu());
+            dec.setInt(3, teamRequest.getId_saison());
+
+            ResultSet resultSet = dec.executeQuery();
+            while (resultSet.next()) {
+                result = new Equipe(
+                        resultSet.getInt("id"),
+                        resultSet.getString("nom"),
+                        resultSet.getInt("division"),
+                        resultSet.getInt("id_jeu"),
+                        resultSet.getInt("id_saison")
+                );
+            }
+
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+        return result;
+    }
+
+    public boolean createTeam(Equipe teamRequest) {
+        String sql = "INSERT INTO equipe (nom, division, id_jeu, id_saison) VALUES (?, ?, ?, ?)";
+        boolean result = false;
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection(url, user, password);
+
+            PreparedStatement dec = connection.prepareStatement(sql);
+            dec.setString(1, teamRequest.getNom());
+            dec.setInt(2, teamRequest.getDivision());
+            dec.setInt(3, teamRequest.getId_jeu());
+            dec.setInt(4, teamRequest.getId_saison());
+
+            int lineAdded = dec.executeUpdate();
+
+            result = lineAdded > 0;
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (SQLException er) {
+            er.printStackTrace();
+        }
+
+        return result;
+    }
+
+    public boolean modifyTeam(Equipe teamRequest) {
+        String sql = "UPDATE equipe SET nom = ?, division = ? WHERE id = ?";
+        boolean result = false;
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection(url, user, password);
+
+            PreparedStatement dec = connection.prepareStatement(sql);
+            dec.setString(1, teamRequest.getNom());
+            dec.setInt(2, teamRequest.getDivision());
+            dec.setInt(3, teamRequest.getId());
+
+            int lineModified = dec.executeUpdate();
+
+            result = lineModified > 0;
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (SQLException er) {
+            er.printStackTrace();
+        }
+
+        return result;
+    }
+
+    public Joueur getPlayerByName(Joueur playerRequest) {
+        String sql = "SELECT * FROM joueur WHERE pseudo = ? AND id_jeu = ? AND id_saison = ?";
+        Joueur result = null;
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection(url, user, password);
+
+            PreparedStatement dec = connection.prepareStatement(sql);
+            dec.setString(1, playerRequest.getPseudo());
+            dec.setInt(2, playerRequest.getId_jeu());
+            dec.setInt(3, playerRequest.getId_saison());
+
+            ResultSet resultSet = dec.executeQuery();
+            while (resultSet.next()) {
+                result = new Joueur(
+                        resultSet.getInt("id"),
+                        resultSet.getString("prenom"),
+                        resultSet.getString("nom"),
+                        resultSet.getString("pseudo"),
+                        resultSet.getString("date_naissance"),
+                        resultSet.getInt("id_position"),
+                        resultSet.getInt("id_equipe"),
+                        resultSet.getInt("id_jeu"),
+                        resultSet.getInt("id_saison")
+                );
+            }
+
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+        return result;
+    }
+
+    public List<Joueur> getPlayerByTeam(Joueur playerRequest) {
+        String sql = "SELECT * FROM joueur WHERE id_equipe = ?";
+        List<Joueur> result = new ArrayList<>();
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection(url, user, password);
+
+            PreparedStatement dec = connection.prepareStatement(sql);
+            dec.setInt(1, playerRequest.getId_equipe());
+
+            ResultSet resultSet = dec.executeQuery();
+            while (resultSet.next()) {
+                result.add(new Joueur(
+                        resultSet.getInt("id"),
+                        resultSet.getString("prenom"),
+                        resultSet.getString("nom"),
+                        resultSet.getString("pseudo"),
+                        resultSet.getString("date_naissance"),
+                        resultSet.getInt("id_position"),
+                        resultSet.getInt("id_equipe"),
+                        resultSet.getInt("id_jeu"),
+                        resultSet.getInt("id_saison")
+                ));
+            }
+
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+        return result;
+    }
+
+    public boolean createPlayer(Joueur playerRequest) {
+        String sql = "INSERT INTO joueur (prenom, nom, pseudo, date_naissance, id_position, id_equipe, id_jeu, id_saison) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        boolean result = false;
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection(url, user, password);
+
+            PreparedStatement dec = connection.prepareStatement(sql);
+            dec.setString(1, playerRequest.getPrenom());
+            dec.setString(2, playerRequest.getNom());
+            dec.setString(3, playerRequest.getPseudo());
+            dec.setString(4, playerRequest.getDate_naissance());
+            dec.setInt(5, playerRequest.getId_position());
+            dec.setInt(6, playerRequest.getId_equipe());
+            dec.setInt(7, playerRequest.getId_jeu());
+            dec.setInt(8, playerRequest.getId_saison());
+
+            int lineAdded = dec.executeUpdate();
+
+            result = lineAdded > 0;
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (SQLException er) {
+            er.printStackTrace();
+        }
+
+        return result;
+    }
+
+    public int createPlayers(List<Joueur> playerRequest) {
+        int result = 0;
+        for (Joueur playerToAdd : playerRequest) {
+            if (createPlayer(playerToAdd)) {
+                result ++;
+            }
+        }
+
+        return result;
+    }
+
+    public boolean modifyPlayer(Joueur playerRequest) {
+        String sql = "UPDATE joueur SET prenom = ?, nom = ?, pseudo = ?, date_naissance = ?, id_position = ?, id_equipe = ?, id_jeu = ?, id_saison = ? WHERE id = ?";
+        boolean result = false;
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection(url, user, password);
+
+            PreparedStatement dec = connection.prepareStatement(sql);
+            dec.setString(1, playerRequest.getPrenom());
+            dec.setString(2, playerRequest.getNom());
+            dec.setString(3, playerRequest.getPseudo());
+            dec.setString(4, playerRequest.getDate_naissance());
+            dec.setInt(5, playerRequest.getId_position());
+            dec.setInt(6, playerRequest.getId_equipe());
+            dec.setInt(7, playerRequest.getId_jeu());
+            dec.setInt(8, playerRequest.getId_saison());
+            dec.setInt(9, playerRequest.getId());
+
+            int lineAdded = dec.executeUpdate();
+
+            result = lineAdded > 0;
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (SQLException er) {
+            er.printStackTrace();
+        }
+
+        return result;
+    }
+
+    public int modifyPlayers(List<Joueur> playerRequest) {
+        int result = 0;
+        for (Joueur playerToModify : playerRequest) {
+            if (modifyPlayer(playerToModify)) {
+                result ++;
+            }
+        }
+
+        return result;
+    }
+
+
 
     /* EXAMPLE
     public List<Utilisateur> getAllUsers() {
