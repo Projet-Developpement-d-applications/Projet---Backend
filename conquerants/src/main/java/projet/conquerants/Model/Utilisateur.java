@@ -6,10 +6,19 @@ public class Utilisateur {
     private String nom;
     private String pseudo;
     private String mot_passe;
-    private Role role;
+    private int role_id;
 
     public Utilisateur() {
 
+    }
+
+    public Utilisateur(int id, String prenom, String nom, String pseudo, String mot_passe, int role_id) {
+        this.id = id;
+        this.prenom = prenom;
+        this.nom = nom;
+        this.pseudo = pseudo;
+        this.mot_passe = mot_passe;
+        this.role_id = role_id;
     }
 
     public int getId() {
@@ -32,8 +41,8 @@ public class Utilisateur {
         return mot_passe;
     }
 
-    public Role getRole() {
-        return role;
+    public int getRole() {
+        return role_id;
     }
 
     @Override
@@ -44,7 +53,7 @@ public class Utilisateur {
                 ", nom='" + nom + '\'' +
                 ", pseudo='" + pseudo + '\'' +
                 ", mot_passe='" + mot_passe + '\'' +
-                ", role=" + role +
+                ", role=" + role_id +
                 '}';
     }
 }

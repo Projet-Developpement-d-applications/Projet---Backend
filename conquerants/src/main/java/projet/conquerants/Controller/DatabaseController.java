@@ -1,12 +1,9 @@
 package projet.conquerants.Controller;
 
-import projet.conquerants.Model.LoginRequest;
 import projet.conquerants.Model.RegisterRequest;
 import projet.conquerants.Model.Utilisateur;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 import static projet.conquerants.Util.PasswordHashUtil.hashPassword;
 
@@ -20,9 +17,9 @@ public class DatabaseController {
 
     }
 
-    public LoginRequest doesUserExist(String username) {
-        String sql = "SELECT pseudo, mot_passe FROM utilisateur WHERE pseudo = ?";
-        LoginRequest loginInfo = null;
+    public Utilisateur doesUserExist(String username) {
+        String sql = "SELECT * FROM utilisateur WHERE pseudo = ?";
+        Utilisateur userInfo = null;
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -34,9 +31,13 @@ public class DatabaseController {
             ResultSet resultSet = dec.executeQuery();
 
             if (resultSet.next()) {
-                loginInfo = new LoginRequest(
+                userInfo = new Utilisateur(
+                        resultSet.getInt("id"),
+                        resultSet.getString("prenom"),
+                        resultSet.getString("nom"),
                         resultSet.getString("pseudo"),
-                        resultSet.getString("mot_passe")
+                        resultSet.getString("mot_passe"),
+                        resultSet.getInt("id_role")
                 );
             }
 
@@ -44,7 +45,7 @@ public class DatabaseController {
             throw new RuntimeException(e);
         }
 
-        return loginInfo;
+        return userInfo;
     }
 
     public boolean createUser(RegisterRequest registerRequest) {

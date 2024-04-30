@@ -1,12 +1,11 @@
 package projet.conquerants.Controller;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import projet.conquerants.Model.LoginRequest;
 import projet.conquerants.Model.RegisterRequest;
+import projet.conquerants.Model.Utilisateur;
 
 import java.util.Objects;
 
@@ -25,7 +24,7 @@ public class ConnexionController {
     public String login(@RequestBody LoginRequest loginRequest) {
         String retour = "non";
 
-        LoginRequest realInfo = database.doesUserExist(loginRequest.getPseudo());
+        Utilisateur realInfo = database.doesUserExist(loginRequest.getPseudo());
         if (realInfo != null) {
             String hashMotPasse = hashPassword(loginRequest.getMot_passe());
             if (Objects.equals(hashMotPasse, realInfo.getMot_passe())) {
