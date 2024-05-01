@@ -54,11 +54,6 @@ public class ConnexionController {
         return retour;
     }
 
-    @GetMapping("allUsers")
-    public List<Utilisateur> getAll() {
-        return database.getAllUsers();
-    }
-
 
 
 }
