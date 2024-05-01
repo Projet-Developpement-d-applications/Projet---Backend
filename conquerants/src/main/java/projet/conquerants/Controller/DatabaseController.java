@@ -346,7 +346,7 @@ public class DatabaseController {
 
 
 
-    /* EXAMPLE
+
     public List<Utilisateur> getAllUsers() {
         String sql = "SELECT * FROM utilisateur";
         List<Utilisateur> utilisateurs = new ArrayList<>();
@@ -364,7 +364,8 @@ public class DatabaseController {
                         result.getString("prenom"),
                         result.getString("nom"),
                         result.getString("pseudo"),
-                        result.getString("mot_passe")
+                        result.getString("mot_passe"),
+                        result.getInt("id_role")
                 );
 
                 utilisateurs.add(tempUser);
@@ -375,5 +376,5 @@ public class DatabaseController {
         }
 
         return utilisateurs;
-    }*/
+    }
 }

@@ -1,5 +1,6 @@
 package projet.conquerants.Controller;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -7,6 +8,7 @@ import projet.conquerants.Model.LoginRequest;
 import projet.conquerants.Model.RegisterRequest;
 import projet.conquerants.Model.Utilisateur;
 
+import java.util.List;
 import java.util.Objects;
 
 import static projet.conquerants.Util.PasswordHashUtil.hashPassword;
@@ -50,6 +52,11 @@ public class ConnexionController {
         }
 
         return retour;
+    }
+
+    @GetMapping("allUsers")
+    public List<Utilisateur> getAll() {
+        return database.getAllUsers();
     }
 
 
