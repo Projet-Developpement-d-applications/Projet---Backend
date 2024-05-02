@@ -1,48 +1,44 @@
 package projet.conquerants.Model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import jakarta.persistence.*;
+import projet.conquerants.Serializer.RoleSerializer;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity(name = "utilisateur")
 public class Utilisateur {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String prenom;
     private String nom;
     private String pseudo;
     private String mot_passe;
-    private int role_id;
+    @ManyToOne
+    @JoinColumn(name = "id_role")
+    @JsonSerialize(using = RoleSerializer.class)
+    private Role role;
+    @OneToMany(mappedBy = "utilisateur")
+    private List<Prediction> predictions = new ArrayList<>();
 
     public Utilisateur() {
 
     }
 
-    public Utilisateur(int id, String prenom, String nom, String pseudo, String mot_passe, int role_id) {
-        this.id = id;
+    public Utilisateur(String prenom, String nom, String pseudo, String mot_passe, Role role) {
         this.prenom = prenom;
         this.nom = nom;
         this.pseudo = pseudo;
         this.mot_passe = mot_passe;
-        this.role_id = role_id;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getPrenom() {
-        return prenom;
-    }
-
-    public String getNom() {
-        return nom;
-    }
-
-    public String getPseudo() {
-        return pseudo;
+        this.role = role;
     }
 
     public String getMot_passe() {
         return mot_passe;
-    }
-
-    public int getRole() {
-        return role_id;
     }
 
     @Override
@@ -53,7 +49,7 @@ public class Utilisateur {
                 ", nom='" + nom + '\'' +
                 ", pseudo='" + pseudo + '\'' +
                 ", mot_passe='" + mot_passe + '\'' +
-                ", role=" + role_id +
+                ", role=" + role +
                 '}';
     }
 }

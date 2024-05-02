@@ -1,22 +1,46 @@
 package projet.conquerants.Model;
 
-public class Equipe {
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import jakarta.persistence.*;
+import projet.conquerants.Serializer.JeuSerializer;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+public class Equipe {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String nom;
     private int division;
-    private int id_jeu;
-    private int id_saison;
+    @ManyToOne
+    @JoinColumn(name = "id_jeu")
+    @JsonSerialize(using = JeuSerializer.class)
+    private Jeu jeu;
+    @ManyToOne
+    @JoinColumn(name = "id_saison")
+    @JsonIgnoreProperties({"id"})
+    private Saison saison;
+    @OneToMany(mappedBy = "equipe")
+    private List<Joueur> joueurs = new ArrayList<>();
+    @OneToMany(mappedBy = "equipe1")
+    private List<Match> matchs1 = new ArrayList<>();
+    @OneToMany(mappedBy = "equipe2")
+    private List<Match> matchs2 = new ArrayList<>();
 
     public Equipe() {
+
     }
 
-    public Equipe(int id, String nom, int division, int id_jeu, int id_saison) {
-        this.id = id;
+    public Equipe(String nom, int division, Jeu jeu, Saison saison) {
         this.nom = nom;
         this.division = division;
-        this.id_jeu = id_jeu;
-        this.id_saison = id_saison;
+        this.jeu = jeu;
+        this.saison = saison;
     }
 
     public int getId() {
@@ -31,11 +55,30 @@ public class Equipe {
         return division;
     }
 
-    public int getId_jeu() {
-        return id_jeu;
+    public Jeu getJeu() {
+        return jeu;
     }
 
-    public int getId_saison() {
-        return id_saison;
+    public Saison getSaison() {
+        return saison;
+    }
+
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
+
+    public void setDivision(int division) {
+        this.division = division;
+    }
+
+    @Override
+    public String toString() {
+        return "Equipe{" +
+                "id=" + id +
+                ", nom='" + nom + '\'' +
+                ", division=" + division +
+                ", jeu=" + jeu +
+                ", saison=" + saison +
+                '}';
     }
 }

@@ -1,14 +1,13 @@
 package projet.conquerants.Controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import projet.conquerants.Model.LoginRequest;
-import projet.conquerants.Model.RegisterRequest;
+import projet.conquerants.Request.ConnexionRequest;
+import projet.conquerants.Request.InscriptionRequest;
 import projet.conquerants.Model.Utilisateur;
 
-import java.util.List;
 import java.util.Objects;
 
 import static projet.conquerants.Util.PasswordHashUtil.hashPassword;
@@ -16,20 +15,21 @@ import static projet.conquerants.Util.PasswordHashUtil.hashPassword;
 @RestController
 public class ConnexionController {
 
-    private DatabaseController database;
+    private DatabaseService database;
 
-    public ConnexionController() {
-        database = new DatabaseController();
+    @Autowired
+    public ConnexionController(DatabaseService database) {
+        this.database = database;
     }
 
     @PostMapping("connexion")
-    public String login(@RequestBody LoginRequest loginRequest) {
+    public String login(@RequestBody ConnexionRequest connexionRequest) {
         String retour = "non";
 
-        Utilisateur realInfo = database.doesUserExist(loginRequest.getPseudo());
-        if (realInfo != null) {
-            String hashMotPasse = hashPassword(loginRequest.getMot_passe());
-            if (Objects.equals(hashMotPasse, realInfo.getMot_passe())) {
+        Utilisateur utilisateur = database.getUtilisateur(connexionRequest.getPseudo());
+        if (utilisateur != null) {
+            String hashMotPasse = hashPassword(connexionRequest.getMot_passe());
+            if (Objects.equals(hashMotPasse, utilisateur.getMot_passe())) {
                 retour = "oui";
             } else {
                 retour = "mauvais mdp";
@@ -40,18 +40,23 @@ public class ConnexionController {
     }
 
     @PostMapping("inscription")
-    public String register(@RequestBody RegisterRequest registerRequest) {
+    public String register(@RequestBody InscriptionRequest inscriptionRequest) {
         String retour = "non";
 
-        if (database.doesUserExist(registerRequest.getPseudo()) == null) {
-            boolean result = database.createUser(registerRequest);
-
-            retour = result ? "oui" : "n'a pas pu être créé";
+        if (database.getUtilisateur(inscriptionRequest.getPseudo()) == null) {
+            Utilisateur result = database.createUtilisateur(creerUtilisateurTemp(inscriptionRequest));
+            retour = result != null ? "oui" : "n'a pas pu être créé";
         } else {
             retour = "utilisateur avec ce pseudo existe déjà";
         }
 
         return retour;
+    }
+
+    /** ajout validation*/
+    private Utilisateur creerUtilisateurTemp(InscriptionRequest inscriptionRequest) {
+        return new Utilisateur(inscriptionRequest.getPrenom(), inscriptionRequest.getNom(), inscriptionRequest.getPseudo(),
+                hashPassword(inscriptionRequest.getMot_passe()), database.getDefaultRole());
     }
 
 

@@ -1,9 +1,11 @@
 package projet.conquerants.Controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import projet.conquerants.Model.Joueur;
+import projet.conquerants.Model.*;
+import projet.conquerants.Request.JoueurRequest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,17 +13,21 @@ import java.util.List;
 @RestController
 public class JoueurController {
 
-    private DatabaseController database;
+    private DatabaseService database;
 
-    public JoueurController() {
-        database = new DatabaseController();
+    @Autowired
+    public JoueurController(DatabaseService database) {
+        this.database = database;
     }
 
     @PostMapping("joueurParPseudo")
-    public Joueur joueurParPseudo(@RequestBody Joueur playerRequest) {
+    public Joueur joueurParPseudo(@RequestBody JoueurRequest request) {
         Joueur retour = null;
 
-        Joueur joueur = database.getPlayerByName(playerRequest);
+        Jeu jeu = database.getJeuParNom(request.getJeu());
+        Saison saison = database.getSaisonParDebut(request.getSaison());
+
+        Joueur joueur = database.getJoueurParNom(request.getPseudo(), jeu, saison);
         if (joueur != null) {
             retour = joueur;
         }
@@ -30,10 +36,14 @@ public class JoueurController {
     }
 
     @PostMapping("joueurParEquipe")
-    public List<Joueur> joueurParEquipe(@RequestBody Joueur playerRequest) {
+    public List<Joueur> joueurParEquipe(@RequestBody JoueurRequest request) {
         List<Joueur> retour = new ArrayList<>();
 
-        List<Joueur> joueurs = database.getPlayerByTeam(playerRequest);
+        Jeu jeu = database.getJeuParNom(request.getJeu());
+        Saison saison = database.getSaisonParDebut(request.getSaison());
+        Equipe equipe = database.getEquipeParNom(request.getEquipe(), jeu, saison);
+
+        List<Joueur> joueurs = database.getJoueursParEquipe(equipe);
         if (!joueurs.isEmpty()) {
             retour = joueurs;
         }
@@ -42,11 +52,11 @@ public class JoueurController {
     }
 
     @PostMapping("creerJoueur")
-    public String creerJoueur(@RequestBody Joueur playerRequest) {
+    public String creerJoueur(@RequestBody JoueurRequest request) {
         String retour = "non";
 
-        boolean isCreated = database.createPlayer(playerRequest);
-        if (isCreated) {
+        Joueur joueur = database.createJoueur(creerJoueurTemp(request));
+        if (joueur != null) {
             retour = "oui";
         }
 
@@ -54,10 +64,10 @@ public class JoueurController {
     }
 
     @PostMapping("creerJoueurs")
-    public String creerJoueurs(@RequestBody List<Joueur> playerRequest) {
+    public String creerJoueurs(@RequestBody List<JoueurRequest> request) {
         String retour = "non";
 
-        int rowCreated = database.createPlayers(playerRequest);
+        int rowCreated = database.createJoueurs(creerJoueursTemp(request)).size();
         if (rowCreated > 0) {
             retour = "added " + rowCreated;
         }
@@ -66,11 +76,11 @@ public class JoueurController {
     }
 
     @PostMapping("modifierJoueur")
-    public String modifierJoueur(@RequestBody Joueur playerRequest) {
+    public String modifierJoueur(@RequestBody JoueurRequest request) {
         String retour = "non";
 
-        boolean isModifed = database.modifyPlayer(playerRequest);
-        if (isModifed) {
+        Joueur joueur = database.modifyJoueur(modifierJoueurTemp(request));
+        if (joueur != null) {
             retour = "oui";
         }
 
@@ -78,15 +88,71 @@ public class JoueurController {
     }
 
     @PostMapping("modifierJoueurs")
-    public String modifierJoueurs(@RequestBody List<Joueur> playerRequest) {
+    public String modifierJoueurs(@RequestBody List<JoueurRequest> request) {
         String retour = "non";
 
-        int rowModified = database.modifyPlayers(playerRequest);
+        int rowModified = database.modifyJoueurs(modifierJoueursTemp(request)).size();
         if (rowModified > 0) {
             retour = "modified " + rowModified;
         }
 
         return retour;
+    }
+
+    private Joueur creerJoueurTemp(JoueurRequest request) {
+        Jeu jeu = database.getJeuParNom(request.getJeu());
+        Saison saison = database.getSaisonParDebut(request.getSaison());
+        Equipe equipe = database.getEquipeParNom(request.getEquipe(), jeu, saison);
+        Position position = database.getPositionParNom(request.getPosition());
+
+        Joueur joueurTemp = new Joueur(request.getPrenom(), request.getNom(), request.getPseudo(),
+                request.getDate_naissance(), position, equipe, jeu, saison);
+
+        return joueurTemp;
+    }
+
+    private List<Joueur> creerJoueursTemp(List<JoueurRequest> request) {
+        List<Joueur> joueursTemp = new ArrayList<>();
+        for (JoueurRequest jr: request) {
+            joueursTemp.add(creerJoueurTemp(jr));
+        }
+
+        return joueursTemp;
+    }
+
+    private Joueur modifierJoueurTemp(JoueurRequest request) {
+        Jeu jeu = database.getJeuParNom(request.getJeu());
+        Saison saison = database.getSaisonParDebut(request.getSaison());
+        Joueur joueurTemp = database.getJoueurParNom(request.getPseudo(), jeu, saison);
+
+        if (request.getPrenom() != null) {
+            joueurTemp.setPrenom(request.getPrenom());
+        }
+        if (request.getNom() != null) {
+            joueurTemp.setNom(request.getNom());
+        }
+        if (request.getPseudo() != null) {
+            joueurTemp.setPseudo(request.getPseudo());
+        }
+        if (request.getPosition() != null) {
+            Position position = database.getPositionParNom(request.getPosition());
+            joueurTemp.setPosition(position);
+        }
+        if (request.getEquipe() != null) {
+            Equipe equipe = database.getEquipeParNom(request.getEquipe(), jeu, saison);
+            joueurTemp.setEquipe(equipe);
+        }
+
+        return database.modifyJoueur(joueurTemp);
+    }
+
+    private List<Joueur> modifierJoueursTemp(List<JoueurRequest> request) {
+        List<Joueur> joueursTemp = new ArrayList<>();
+        for (JoueurRequest jr: request) {
+            joueursTemp.add(modifierJoueurTemp(jr));
+        }
+
+        return joueursTemp;
     }
 
 

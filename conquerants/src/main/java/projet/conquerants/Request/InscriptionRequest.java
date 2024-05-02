@@ -1,14 +1,11 @@
-package projet.conquerants.Model;
+package projet.conquerants.Request;
 
-public class RegisterRequest {
+public class InscriptionRequest {
 
     private String prenom;
     private String nom;
     private String pseudo;
     private String mot_passe;
-
-    public RegisterRequest() {
-    }
 
     public String getPrenom() {
         return prenom;

@@ -1,9 +1,13 @@
 package projet.conquerants.Controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import projet.conquerants.Model.Equipe;
+import projet.conquerants.Model.Jeu;
+import projet.conquerants.Model.Saison;
+import projet.conquerants.Request.EquipeRequest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,17 +15,21 @@ import java.util.List;
 @RestController
 public class EquipeController {
 
-    private DatabaseController database;
+    private DatabaseService database;
 
-    public EquipeController() {
-        database = new DatabaseController();
+    @Autowired
+    public EquipeController(DatabaseService database) {
+        this.database = database;
     }
 
     @PostMapping("equipeParJeu")
-    public List<Equipe> equipeParJeu(@RequestBody Equipe teamRequest) {
+    public List<Equipe> equipeParJeu(@RequestBody EquipeRequest request) {
         List<Equipe> retour = new ArrayList<>();
 
-        List<Equipe> equipes = database.getTeamByGame(teamRequest);
+        Jeu jeu = database.getJeuParNom(request.getJeu());
+        Saison saison = database.getSaisonParDebut(request.getSaison());
+
+        List<Equipe> equipes = database.getEquipeParJeu(jeu, saison);
         if (!equipes.isEmpty()) {
             retour = equipes;
         }
@@ -30,10 +38,13 @@ public class EquipeController {
     }
 
     @PostMapping("equipeParNom")
-    public Equipe equipeParNom(@RequestBody Equipe teamRequest) {
+    public Equipe equipeParNom(@RequestBody EquipeRequest request) {
         Equipe retour = null;
 
-        Equipe equipe = database.getTeamByName(teamRequest);
+        Jeu jeu = database.getJeuParNom(request.getJeu());
+        Saison saison = database.getSaisonParDebut(request.getSaison());
+
+        Equipe equipe = database.getEquipeParNom(request.getNom(), jeu, saison);
         if (equipe != null) {
             retour = equipe;
         }
@@ -42,11 +53,11 @@ public class EquipeController {
     }
 
     @PostMapping("creerEquipe")
-    public String creerEquipe(@RequestBody Equipe teamRequest) {
+    public String creerEquipe(@RequestBody EquipeRequest request) {
         String retour = "non";
 
-        boolean isCreated = database.createTeam(teamRequest);
-        if (isCreated) {
+        Equipe result = database.createEquipe(creerEquipeTemp(request));
+        if (result != null) {
             retour = "oui";
         }
 
@@ -54,14 +65,31 @@ public class EquipeController {
     }
 
     @PostMapping("modifierEquipe")
-    public String modifierEquipe(@RequestBody Equipe teamRequest) {
+    public String modifierEquipe(@RequestBody EquipeRequest request) {
         String retour = "non";
 
-        boolean isModified = database.modifyTeam(teamRequest);
-        if (isModified) {
+        Equipe result = database.modifyEquipe(modifierEquipeTemp(request));
+        if (result != null) {
             retour = "oui";
         }
 
         return retour;
+    }
+
+
+    /** ajoute validation*/
+    private Equipe creerEquipeTemp(EquipeRequest request) {
+        Jeu jeu = database.getJeuParNom(request.getJeu());
+        Saison saison = database.getSaisonParDebut(request.getSaison());
+
+        return new Equipe(request.getNom(), request.getDivision(), jeu, saison);
+    }
+
+    private Equipe modifierEquipeTemp(EquipeRequest request) {
+        Equipe equipe = database.getEquipeParId(request.getId());
+
+        equipe.setNom(request.getNom());
+        equipe.setDivision(request.getDivision());
+        return equipe;
     }
 }

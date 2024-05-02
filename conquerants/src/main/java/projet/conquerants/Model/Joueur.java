@@ -1,30 +1,57 @@
 package projet.conquerants.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import jakarta.persistence.*;
+import projet.conquerants.Serializer.JeuSerializer;
+import projet.conquerants.Serializer.PositionSerializer;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+@Entity
 public class Joueur {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String prenom;
     private String nom;
     private String pseudo;
-    private String date_naissance;
-    private int id_position;
-    private int id_equipe;
-    private int id_jeu;
-    private int id_saison;
+    private Date date_naissance;
+    @ManyToOne
+    @JoinColumn(name = "id_position")
+    @JsonSerialize(using = PositionSerializer.class)
+    private Position position;
+    @ManyToOne
+    @JoinColumn(name = "id_equipe")
+    @JsonIgnoreProperties({"id", "jeu", "saison"})
+    private Equipe equipe;
+    @ManyToOne
+    @JoinColumn(name = "id_jeu")
+    @JsonSerialize(using = JeuSerializer.class)
+    private Jeu jeu;
+    @ManyToOne
+    @JoinColumn(name = "id_saison")
+    @JsonIgnore
+    private Saison saison;
+    @OneToMany(mappedBy = "joueur")
+    private List<Statistique> statistiques = new ArrayList<>();
 
     public Joueur() {
 
     }
 
-    public Joueur(int id, String prenom, String nom, String pseudo, String date_naissance, int id_position, int id_equipe, int id_jeu, int id_saison) {
-        this.id = id;
+    public Joueur(String prenom, String nom, String pseudo, Date date_naissance, Position position, Equipe equipe, Jeu jeu, Saison saison) {
         this.prenom = prenom;
         this.nom = nom;
         this.pseudo = pseudo;
         this.date_naissance = date_naissance;
-        this.id_position = id_position;
-        this.id_equipe = id_equipe;
-        this.id_jeu = id_jeu;
-        this.id_saison = id_saison;
+        this.position = position;
+        this.equipe = equipe;
+        this.jeu = jeu;
+        this.saison = saison;
     }
 
     public int getId() {
@@ -43,23 +70,58 @@ public class Joueur {
         return pseudo;
     }
 
-    public String getDate_naissance() {
+    public Date getDate_naissance() {
         return date_naissance;
     }
 
-    public int getId_position() {
-        return id_position;
+    public Position getPosition() {
+        return position;
     }
 
-    public int getId_equipe() {
-        return id_equipe;
+    public Equipe getEquipe() {
+        return equipe;
     }
 
-    public int getId_jeu() {
-        return id_jeu;
+    public Jeu getJeu() {
+        return jeu;
     }
 
-    public int getId_saison() {
-        return id_saison;
+    public Saison getSaison() {
+        return saison;
+    }
+
+    public void setPrenom(String prenom) {
+        this.prenom = prenom;
+    }
+
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
+
+    public void setPseudo(String pseudo) {
+        this.pseudo = pseudo;
+    }
+
+    public void setPosition(Position position) {
+        this.position = position;
+    }
+
+    public void setEquipe(Equipe equipe) {
+        this.equipe = equipe;
+    }
+
+    @Override
+    public String toString() {
+        return "Joueur{" +
+                "id=" + id +
+                ", prenom='" + prenom + '\'' +
+                ", nom='" + nom + '\'' +
+                ", pseudo='" + pseudo + '\'' +
+                ", date_naissance=" + date_naissance +
+                ", position=" + position +
+                ", equipe=" + equipe +
+                ", jeu=" + jeu +
+                ", saison=" + saison +
+                '}';
     }
 }
