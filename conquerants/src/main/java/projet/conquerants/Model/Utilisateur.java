@@ -50,7 +50,7 @@ public class Utilisateur implements UserDetails {
     }
 
     public String getRole() {
-        return role.getNom();
+        return role.getNom().toUpperCase();
     }
 
     @Override

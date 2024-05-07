@@ -40,6 +40,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         req -> req.requestMatchers("/connexion", "/inscription")
                                 .permitAll()
+                                .requestMatchers("/welcome")
+                                .hasAuthority("ADMIN")
                                 .anyRequest()
                                 .authenticated()
                 ).userDetailsService(userDetailsService)
