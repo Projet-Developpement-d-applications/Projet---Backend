@@ -7,18 +7,19 @@ import org.springframework.web.bind.annotation.RestController;
 import projet.conquerants.Request.ConnexionRequest;
 import projet.conquerants.Request.InscriptionRequest;
 import projet.conquerants.Model.Utilisateur;
+import projet.conquerants.Service.DatabaseService;
 
 import java.util.Objects;
 
 import static projet.conquerants.Util.PasswordHashUtil.hashPassword;
 
 @RestController
-public class ConnexionController {
+public class AuthController {
 
     private DatabaseService database;
 
     @Autowired
-    public ConnexionController(DatabaseService database) {
+    public AuthController(DatabaseService database) {
         this.database = database;
     }
 
