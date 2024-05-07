@@ -6,6 +6,7 @@ import projet.conquerants.Model.*;
 import projet.conquerants.Repository.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DatabaseService {
@@ -52,7 +53,7 @@ public class DatabaseService {
         return saisonRepository.findByDebut(debut);
     }
 
-    public Utilisateur getUtilisateur(String pseudo) {
+    public Optional<Utilisateur> getUtilisateur(String pseudo) {
         return utilisateurRepository.findByPseudo(pseudo);
     }
 

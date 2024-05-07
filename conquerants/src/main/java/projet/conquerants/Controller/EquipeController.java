@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 import projet.conquerants.Model.Equipe;
 import projet.conquerants.Model.Jeu;
 import projet.conquerants.Model.Saison;
-import projet.conquerants.Request.EquipeRequest;
+import projet.conquerants.Model.Request.EquipeRequest;
 import projet.conquerants.Service.DatabaseService;
 
 import java.util.ArrayList;

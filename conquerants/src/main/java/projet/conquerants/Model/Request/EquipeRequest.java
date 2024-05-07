@@ -1,4 +1,4 @@
-package projet.conquerants.Request;
+package projet.conquerants.Model.Request;
 
 public class EquipeRequest {
     private int id;

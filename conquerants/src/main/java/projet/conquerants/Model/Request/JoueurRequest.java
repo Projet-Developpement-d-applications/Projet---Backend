@@ -1,4 +1,4 @@
-package projet.conquerants.Request;
+package projet.conquerants.Model.Request;
 
 import java.util.Date;
 
