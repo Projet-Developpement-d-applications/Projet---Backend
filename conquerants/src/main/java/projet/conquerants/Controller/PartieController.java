@@ -4,6 +4,7 @@ import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import projet.conquerants.Model.Match;
@@ -47,7 +48,7 @@ public class PartieController {
         return response;
     }
 
-    @PostMapping("/admin/modifierPartie")
+    @PutMapping("/admin/modifierPartie")
     public ResponseEntity<String> modiferPartie(@RequestBody PartieRequest request) {
         ResponseEntity<String> response = null;
         Match match = database.getMatchParId(request.getId_match());

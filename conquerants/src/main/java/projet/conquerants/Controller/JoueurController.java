@@ -2,6 +2,7 @@ package projet.conquerants.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import projet.conquerants.Model.*;
@@ -76,7 +77,7 @@ public class JoueurController {
         return retour;
     }
 
-    @PostMapping("/admin/modifierJoueur")
+    @PutMapping ("/admin/modifierJoueur")
     public String modifierJoueur(@RequestBody JoueurRequest request) {
         String retour = "non";
 
@@ -88,7 +89,7 @@ public class JoueurController {
         return retour;
     }
 
-    @PostMapping("/admin/modifierJoueurs")
+    @PutMapping("/admin/modifierJoueurs")
     public String modifierJoueurs(@RequestBody List<JoueurRequest> request) {
         String retour = "non";
 

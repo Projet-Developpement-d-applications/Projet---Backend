@@ -157,4 +157,20 @@ public class DatabaseService {
     public void deletePartie(Partie partie) {
         partieRepository.delete(partie);
     }
+
+    public Prediction createPrediction(Prediction prediction) {
+        return predictionRepository.save(prediction);
+    }
+
+    public List<Prediction> getPredictionParUtilisateur(Utilisateur utilisateur) {
+        return predictionRepository.findAllByUtilisateur(utilisateur);
+    }
+
+    public List<Prediction> getPredictionParMatch(Match match) {
+        return predictionRepository.findAllByMatch(match);
+    }
+
+    public void modifierPrediction(Prediction p) {
+        predictionRepository.save(p);
+    }
 }

@@ -15,6 +15,7 @@ public class MatchRequest {
     private int score1;
     private int score2;
     private Date date;
+    private boolean jouer;
 
     public int getId_match() {
         return id_match;
@@ -42,5 +43,9 @@ public class MatchRequest {
 
     public int getScore2() {
         return score2;
+    }
+
+    public boolean getJouer() {
+        return jouer;
     }
 }

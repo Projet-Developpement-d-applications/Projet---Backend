@@ -5,13 +5,13 @@ public class PredictionRequest {
     private int id_prediction;
     private boolean vote;
     private int id_match;
-    private int id_utilisateur;
+    private String pseudo;
 
     public int getId_prediction() {
         return id_prediction;
     }
 
-    public boolean isVote() {
+    public boolean getVote() {
         return vote;
     }
 
@@ -19,7 +19,7 @@ public class PredictionRequest {
         return id_match;
     }
 
-    public int getId_utilisateur() {
-        return id_utilisateur;
+    public String getPseudo() {
+        return pseudo;
     }
 }

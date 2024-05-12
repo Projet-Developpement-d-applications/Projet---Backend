@@ -21,6 +21,7 @@ public class Match {
     @ManyToOne
     @JoinColumn(name = "id_equipe2")
     private Equipe equipe2;
+    private boolean jouer;
     @OneToMany(mappedBy = "match")
     private List<Partie> parties = new ArrayList<>();
     @OneToMany(mappedBy = "match")
@@ -35,6 +36,7 @@ public class Match {
         this.date = date_match;
         this.equipe1 = equipe1;
         this.equipe2 = equipe2;
+        this.jouer = false;
     }
 
     public void setScore1(int score1) {
@@ -79,5 +81,13 @@ public class Match {
 
     public int getId() {
         return id;
+    }
+
+    public boolean getJouer() {
+        return jouer;
+    }
+
+    public void setJouer(boolean jouer) {
+        this.jouer = jouer;
     }
 }

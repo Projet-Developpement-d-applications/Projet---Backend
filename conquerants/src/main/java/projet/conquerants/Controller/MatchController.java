@@ -3,13 +3,11 @@ package projet.conquerants.Controller;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import projet.conquerants.Model.Equipe;
 import projet.conquerants.Model.Match;
 import projet.conquerants.Model.Partie;
+import projet.conquerants.Model.Prediction;
 import projet.conquerants.Model.Request.MatchRequest;
 import projet.conquerants.Service.DatabaseService;
 
@@ -67,7 +65,7 @@ public class MatchController {
         return response;
     }
 
-    @PostMapping("/admin/modifierMatch")
+    @PutMapping("/admin/modifierMatch")
     public ResponseEntity<String> modifierMatch(@RequestBody MatchRequest request) {
         ResponseEntity<String> response = null;
 
@@ -80,8 +78,12 @@ public class MatchController {
         match.setDate_match(request.getDate());
         match.setScore1(request.getScore1());
         match.setScore2(request.getScore2());
-
-        if (database.modifierMatch(match) != null) {
+        match.setJouer(request.getJouer());
+        match = database.modifierMatch(match);
+        if (match != null) {
+            if (match.getJouer()) {
+                setPredictionVote(match);
+            }
             response = ResponseEntity.ok("Match modifié");
         } else {
             response = ResponseEntity.status(403).body("Match non modifié, manque d'information");
@@ -99,5 +101,18 @@ public class MatchController {
         database.deleteMatch(match);
 
         return ResponseEntity.ok("Match supprimé");
+    }
+
+    private void setPredictionVote(Match match) {
+        List<Prediction> predictions = database.getPredictionParMatch(match);
+        for (Prediction p: predictions) {
+            if (match.getScore1() > match.getScore2()) {
+                p.setResultat(p.isVote());
+            } else {
+                p.setResultat(!p.isVote());
+            }
+
+            database.modifierPrediction(p);
+        }
     }
 }
