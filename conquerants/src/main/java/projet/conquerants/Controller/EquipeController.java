@@ -53,7 +53,7 @@ public class EquipeController {
         return retour;
     }
 
-    @PostMapping("creerEquipe")
+    @PostMapping("/admin/creerEquipe")
     public String creerEquipe(@RequestBody EquipeRequest request) {
         String retour = "non";
 
@@ -65,7 +65,7 @@ public class EquipeController {
         return retour;
     }
 
-    @PostMapping("modifierEquipe")
+    @PostMapping("/admin/modifierEquipe")
     public String modifierEquipe(@RequestBody EquipeRequest request) {
         String retour = "non";
 

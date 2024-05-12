@@ -52,7 +52,7 @@ public class JoueurController {
         return retour;
     }
 
-    @PostMapping("creerJoueur")
+    @PostMapping("/admin/creerJoueur")
     public String creerJoueur(@RequestBody JoueurRequest request) {
         String retour = "non";
 
@@ -64,7 +64,7 @@ public class JoueurController {
         return retour;
     }
 
-    @PostMapping("creerJoueurs")
+    @PostMapping("/admin/creerJoueurs")
     public String creerJoueurs(@RequestBody List<JoueurRequest> request) {
         String retour = "non";
 
@@ -76,7 +76,7 @@ public class JoueurController {
         return retour;
     }
 
-    @PostMapping("modifierJoueur")
+    @PostMapping("/admin/modifierJoueur")
     public String modifierJoueur(@RequestBody JoueurRequest request) {
         String retour = "non";
 
@@ -88,7 +88,7 @@ public class JoueurController {
         return retour;
     }
 
-    @PostMapping("modifierJoueurs")
+    @PostMapping("/admin/modifierJoueurs")
     public String modifierJoueurs(@RequestBody List<JoueurRequest> request) {
         String retour = "non";
 

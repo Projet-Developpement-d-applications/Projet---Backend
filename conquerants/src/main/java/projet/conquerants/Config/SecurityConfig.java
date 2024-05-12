@@ -40,7 +40,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         req -> req.requestMatchers("/connexion", "/inscription")
                                 .permitAll()
-                                .requestMatchers("/welcome")
+                                .requestMatchers("/admin/**")
                                 .hasAuthority("ADMIN")
                                 .anyRequest()
                                 .authenticated()

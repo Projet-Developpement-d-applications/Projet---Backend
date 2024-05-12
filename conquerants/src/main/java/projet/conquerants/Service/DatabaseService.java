@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import projet.conquerants.Model.*;
 import projet.conquerants.Repository.*;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -107,5 +108,53 @@ public class DatabaseService {
 
     public Position getPositionParNom(String position) {
         return positionRepository.findByNom(position);
+    }
+
+    public List<Match> getMatchsParEquipe(Equipe equipe) {
+        return matchRepository.findAllByEquipe1OrEquipe2(equipe, equipe);
+    }
+
+    public Match createMatch(Match match) {
+        return matchRepository.save(match);
+    }
+
+    public Match getMatchParId(int idMatch) {
+        return matchRepository.findMatchById(idMatch);
+    }
+
+    public Match modifierMatch(Match match) {
+        return matchRepository.save(match);
+    }
+
+    public void deleteMatch(Match match) {
+        matchRepository.delete(match);
+    }
+
+    public List<Match> getMatchDeLaSemaine(Date debut, Date fin) {
+        return matchRepository.findAllByDateBetween(debut, fin);
+    }
+
+    public Partie createPartie(Partie partie) {
+        return partieRepository.save(partie);
+    }
+
+    public Partie getPartieParId(int idPartie) {
+        return partieRepository.findById(idPartie);
+    }
+
+    public Partie modifierPartie(Partie partie) {
+        return partieRepository.save(partie);
+    }
+
+    public List<Partie> getPartiesParMatch(Match match) {
+        return partieRepository.findAllByMatch(match);
+    }
+
+    public void deleteParties(List<Partie> parties) {
+        partieRepository.deleteAll(parties);
+    }
+
+    public void deletePartie(Partie partie) {
+        partieRepository.delete(partie);
     }
 }
