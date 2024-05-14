@@ -9,12 +9,6 @@ import java.util.regex.Pattern;
 @Service
 public class ValidationService {
 
-    private final DatabaseService databaseService;
-
-    public ValidationService(DatabaseService databaseService) {
-        this.databaseService = databaseService;
-    }
-
     public boolean valideStringOfChar(String value) {
         boolean isValid = false;
         String regex = "\\p{L}+";
