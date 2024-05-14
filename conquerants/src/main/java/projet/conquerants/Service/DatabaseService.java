@@ -178,4 +178,8 @@ public class DatabaseService {
     public Optional<Joueur> getJoueurParId(int id) {
         return joueurRepository.findById(id);
     }
+
+    public Prediction getPredictionParUtilisateurEtMatch(Utilisateur utilisateur, Match match) {
+        return predictionRepository.findByMatchAndUtilisateur(match, utilisateur);
+    }
 }

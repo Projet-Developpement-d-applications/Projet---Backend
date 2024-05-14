@@ -43,7 +43,7 @@ public class AuthService {
 
         String token = jwtService.generateToken(utilisateur);
 
-        return new AuthenticationResponse(token, utilisateur.getRole());
+        return new AuthenticationResponse(token, utilisateur.getPseudo(), utilisateur.getRole());
     }
 
     public AuthenticationResponse connexion(ConnexionRequest request) throws RuntimeException {
@@ -56,7 +56,7 @@ public class AuthService {
         Utilisateur utilisateur = databaseService.getUtilisateur(request.getPseudo()).orElseThrow();
         String token = jwtService.generateToken(utilisateur);
 
-        return new AuthenticationResponse(token, utilisateur.getRole());
+        return new AuthenticationResponse(token, utilisateur.getPseudo(), utilisateur.getRole());
     }
 
     public void valideCredentials(String pseudo, String motPasse) throws MauvaisMotPasseException, ExistePasException {

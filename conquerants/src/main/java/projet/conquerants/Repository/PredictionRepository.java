@@ -11,4 +11,5 @@ public interface PredictionRepository extends CrudRepository<Prediction, Integer
     Prediction findById(int id);
     List<Prediction> findAllByUtilisateur(Utilisateur utilisateur);
     List<Prediction> findAllByMatch(Match match);
+    Prediction findByMatchAndUtilisateur(Match match, Utilisateur utilisateur);
 }
