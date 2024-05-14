@@ -4,6 +4,8 @@ import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import projet.conquerants.Exception.ExistePasException;
+import projet.conquerants.Exception.ManqueInfoException;
 import projet.conquerants.Model.Equipe;
 import projet.conquerants.Model.Match;
 import projet.conquerants.Model.Partie;
@@ -29,11 +31,16 @@ public class MatchController {
 
     @PostMapping("matchParEquipe")
     public List<Match> matchParEquipe(@RequestBody MatchRequest request) {
-       Equipe equipe = database.getEquipeParId(request.getId_equipe());
+        Equipe equipe = database.getEquipeParId(request.getId_equipe());
 
-       List<Match> matchs = database.getMatchsParEquipe(equipe).stream().filter(match -> match.getDate_match().getTime() < new Date().getTime()).toList();
+        List<Match> matchs = database.getMatchsParEquipe(equipe).stream().filter(match -> match.getDate_match().getTime() < new Date().getTime()).toList();
 
-       return matchs;
+        return matchs;
+    }
+
+    @PostMapping("matchParId")
+    public Match matchParId(@RequestBody MatchRequest request) {
+        return database.getMatchParId(request.getId_match());
     }
 
     @GetMapping("matchDeLaSemaine")
@@ -50,16 +57,22 @@ public class MatchController {
     public ResponseEntity<String> nouveauMatch(@RequestBody MatchRequest request) {
         ResponseEntity<String> response = null;
 
-        Equipe equipe1 = database.getEquipeParId(request.getId_equipe1());
-        Equipe equipe2 = database.getEquipeParId(request.getId_equipe2());
+        try {
+            Equipe equipe1 = database.getEquipeParId(request.getId_equipe1());
+            Equipe equipe2 = database.getEquipeParId(request.getId_equipe2());
 
-        Match match = new Match(request.getScore1(), request.getScore2(), request.getDate(),
-                equipe1, equipe2);
+            valideRequest(request, equipe1, equipe2);
 
-        if (database.createMatch(match) != null) {
-            response = ResponseEntity.ok("Match créé");
-        } else {
-            response = ResponseEntity.status(403).body("Match non créé, manque d'information");
+            Match match = new Match(request.getScore1(), request.getScore2(), request.getDate(),
+                    equipe1, equipe2);
+
+            if (database.createMatch(match) != null) {
+                response = ResponseEntity.ok("Le match a bien été créé");
+            } else {
+                response = ResponseEntity.status(403).body("Le match n'a pas pu être créé");
+            }
+        } catch (ManqueInfoException e) {
+            response = ResponseEntity.status(403).body("Les informations fournies ne sont pas valides");
         }
 
         return response;
@@ -69,24 +82,40 @@ public class MatchController {
     public ResponseEntity<String> modifierMatch(@RequestBody MatchRequest request) {
         ResponseEntity<String> response = null;
 
-        Equipe equipe1 = database.getEquipeParId(request.getId_equipe1());
-        Equipe equipe2 = database.getEquipeParId(request.getId_equipe2());
+        try {
+            Equipe equipe1 = database.getEquipeParId(request.getId_equipe1());
+            Equipe equipe2 = database.getEquipeParId(request.getId_equipe2());
+            Match match = database.getMatchParId(request.getId_match());
 
-        Match match = database.getMatchParId(request.getId_match());
-        match.setEquipe1(equipe1);
-        match.setEquipe2(equipe2);
-        match.setDate_match(request.getDate());
-        match.setScore1(request.getScore1());
-        match.setScore2(request.getScore2());
-        match.setJouer(request.getJouer());
-        match = database.modifierMatch(match);
-        if (match != null) {
-            if (match.getJouer()) {
-                setPredictionVote(match);
+            valideRequest(request, equipe1, equipe2);
+
+            if (match == null) {
+                throw new ExistePasException();
             }
-            response = ResponseEntity.ok("Match modifié");
-        } else {
-            response = ResponseEntity.status(403).body("Match non modifié, manque d'information");
+
+            match.setEquipe1(equipe1);
+            match.setEquipe2(equipe2);
+            match.setDate_match(request.getDate());
+            match.setScore1(request.getScore1());
+            match.setScore2(request.getScore2());
+            match.setJouer(request.getJouer());
+
+            match = database.modifierMatch(match);
+
+            if (match != null) {
+                if (match.getJouer()) {
+                    setPredictionVote(match);
+                }
+
+                response = ResponseEntity.ok("Le match a bien été modifié");
+
+            } else {
+                response = ResponseEntity.status(403).body("Le match n'a pas pu être modifié");
+            }
+        } catch (ManqueInfoException e) {
+            response = ResponseEntity.status(403).body("Les informations fournies ne sont pas valides");
+        } catch (ExistePasException e) {
+            response = ResponseEntity.status(403).body("Le match que vous recherchez n'existe pas");
         }
 
         return response;
@@ -105,7 +134,7 @@ public class MatchController {
 
     private void setPredictionVote(Match match) {
         List<Prediction> predictions = database.getPredictionParMatch(match);
-        for (Prediction p: predictions) {
+        for (Prediction p : predictions) {
             if (match.getScore1() > match.getScore2()) {
                 p.setResultat(p.isVote());
             } else {
@@ -113,6 +142,13 @@ public class MatchController {
             }
 
             database.modifierPrediction(p);
+        }
+    }
+
+    private void valideRequest(MatchRequest request, Equipe equipe1, Equipe equipe2) throws ManqueInfoException {
+        if (request.getScore1() < 0 || request.getScore2() < 0 || request.getDate() == null ||
+                equipe1 == null || equipe2 == null) {
+            throw new ManqueInfoException();
         }
     }
 }
