@@ -3,13 +3,12 @@ package projet.conquerants.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.authorization.method.AuthorizationInterceptorsOrder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import projet.conquerants.Exception.ManqueInfoException;
 import projet.conquerants.Exception.MauvaisMotPasseException;
-import projet.conquerants.Exception.PseudoExisteDejaException;
-import projet.conquerants.Exception.UtilisateurExistePasException;
+import projet.conquerants.Exception.ExisteDejaException;
+import projet.conquerants.Exception.ExistePasException;
 import projet.conquerants.Model.Request.ConnexionRequest;
 import projet.conquerants.Model.Response.AuthenticationResponse;
 import projet.conquerants.Model.Utilisateur;
@@ -22,18 +21,20 @@ public class AuthService {
     private PasswordEncoder passwordEncoder;
     private JwtService jwtService;
     private AuthenticationManager authenticationManager;
+    private ValidationService validation;
 
     @Autowired
-    public AuthService(DatabaseService databaseService, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager) {
+    public AuthService(DatabaseService databaseService, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager, ValidationService validation) {
         this.databaseService = databaseService;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
+        this.validation = validation;
     }
 
     public AuthenticationResponse inscription(InscriptionRequest request) throws RuntimeException {
-        valideInfoInscription(request);
         validePseudoExistePas(request.getPseudo());
+        valideInfoInscription(request);
 
         Utilisateur utilisateur = new Utilisateur(request.getPrenom(), request.getNom(), request.getPseudo(),
                 passwordEncoder.encode(request.getMot_passe()), databaseService.getDefaultRole());
@@ -58,27 +59,26 @@ public class AuthService {
         return new AuthenticationResponse(token, utilisateur.getRole());
     }
 
-    private void valideCredentials(String pseudo, String motPasse) throws MauvaisMotPasseException, UtilisateurExistePasException{
-        Utilisateur utilisateur = databaseService.getUtilisateur(pseudo).orElseThrow(UtilisateurExistePasException::new);
+    public void valideCredentials(String pseudo, String motPasse) throws MauvaisMotPasseException, ExistePasException {
+        Utilisateur utilisateur = databaseService.getUtilisateur(pseudo).orElseThrow(ExistePasException::new);
 
         if (!passwordEncoder.matches(motPasse, utilisateur.getMot_passe())) {
             throw new MauvaisMotPasseException();
         }
     }
 
-    private void validePseudoExistePas(String pseudo) throws PseudoExisteDejaException{
+    public void validePseudoExistePas(String pseudo) throws ExisteDejaException {
         if (databaseService.getUtilisateur(pseudo).isPresent()) {
-            throw new PseudoExisteDejaException();
+            throw new ExisteDejaException();
         }
     }
 
-    private void valideInfoInscription(InscriptionRequest request) throws ManqueInfoException {
-        if (!valideString(request.getPrenom()) || !valideString(request.getNom()) || !valideString(request.getPseudo()) || !valideString(request.getMot_passe())) {
+    public void valideInfoInscription(InscriptionRequest request) throws ManqueInfoException {
+        if (!validation.valideStringOfChar(request.getPrenom()) || !validation.valideStringOfChar(request.getNom()) ||
+                !validation.valideStringOfCharAndDigits(request.getPseudo()) || !validation.validePasswordString(request.getMot_passe())) {
             throw new ManqueInfoException();
         }
     }
 
-    private boolean valideString(String value) {
-        return (!value.isEmpty());
-    }
+
 }

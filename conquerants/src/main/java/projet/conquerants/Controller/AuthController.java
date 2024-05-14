@@ -7,11 +7,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import projet.conquerants.Exception.ManqueInfoException;
 import projet.conquerants.Exception.MauvaisMotPasseException;
-import projet.conquerants.Exception.PseudoExisteDejaException;
-import projet.conquerants.Exception.UtilisateurExistePasException;
+import projet.conquerants.Exception.ExisteDejaException;
+import projet.conquerants.Exception.ExistePasException;
 import projet.conquerants.Model.Request.ConnexionRequest;
 import projet.conquerants.Model.Request.InscriptionRequest;
-import projet.conquerants.Model.Response.AuthenticationResponse;
 import projet.conquerants.Model.Response.ExceptionResponse;
 import projet.conquerants.Model.Response.IResponse;
 import projet.conquerants.Service.AuthService;
@@ -32,7 +31,7 @@ public class AuthController {
 
         try {
             response = ResponseEntity.ok(authService.connexion(connexionRequest));
-        } catch (UtilisateurExistePasException e) {
+        } catch (ExistePasException e) {
             response = ResponseEntity.status(403).body(new ExceptionResponse("L'utilisateur n'existe pas"));
         } catch (MauvaisMotPasseException e) {
             response = ResponseEntity.status(403).body(new ExceptionResponse("Mauvais mot de passe"));
@@ -49,7 +48,7 @@ public class AuthController {
             response = ResponseEntity.ok(authService.inscription(inscriptionRequest));
         } catch (ManqueInfoException e) {
             response = ResponseEntity.status(403).body(new ExceptionResponse("Information non conforme"));
-        } catch (PseudoExisteDejaException e) {
+        } catch (ExisteDejaException e) {
             response = ResponseEntity.status(403).body(new ExceptionResponse("Ce pseudo est déjà utilisé"));
         }
 

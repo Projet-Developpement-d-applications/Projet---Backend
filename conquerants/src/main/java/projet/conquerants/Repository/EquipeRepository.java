@@ -1,5 +1,6 @@
 package projet.conquerants.Repository;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import projet.conquerants.Model.Equipe;
 import projet.conquerants.Model.Jeu;
