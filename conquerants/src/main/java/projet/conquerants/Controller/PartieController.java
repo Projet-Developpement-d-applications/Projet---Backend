@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import projet.conquerants.Exception.ExisteDejaException;
+import projet.conquerants.Exception.ExistePasException;
+import projet.conquerants.Exception.ManqueInfoException;
 import projet.conquerants.Model.Match;
 import projet.conquerants.Model.Partie;
 import projet.conquerants.Model.Request.PartieRequest;
@@ -27,22 +30,35 @@ public class PartieController {
     @PostMapping("/admin/ajouterPartie")
     public ResponseEntity<String> ajouterPartie(@RequestBody PartieRequest request) {
         ResponseEntity<String> response = null;
-        Match match = database.getMatchParId(request.getId_match());
 
-        Partie partie = new Partie(request.getScore1(), request.getScore2(), match);
+        try {
+            Match match = database.getMatchParId(request.getId_match());
 
-        if (database.createPartie(partie) != null) {
-            if (partie.getScore1() > partie.getScore2()) {
-                match.setScore1(match.getScore1() + 1);
-            } else {
-                match.setScore2(match.getScore2() + 1);
+            if (match == null) {
+                throw new ExistePasException();
             }
 
-            database.modifierMatch(match);
+            valideRequest(request);
 
-            response = ResponseEntity.ok("Partie créé");
-        } else {
-            response = ResponseEntity.status(403).body("Partie non créé");
+            Partie partie = new Partie(request.getScore1(), request.getScore2(), match);
+
+            if (database.createPartie(partie) != null) {
+                if (partie.getScore1() > partie.getScore2()) {
+                    match.setScore1(match.getScore1() + 1);
+                } else {
+                    match.setScore2(match.getScore2() + 1);
+                }
+
+                database.modifierMatch(match);
+
+                response = ResponseEntity.ok("La partie a été créé avec succès");
+            } else {
+                response = ResponseEntity.status(403).body("La partie n'a pas pu être créé");
+            }
+        } catch (ManqueInfoException e) {
+            response = ResponseEntity.status(403).body("Les informations fournies ne sont pas valides");
+        } catch (ExistePasException e) {
+            response = ResponseEntity.status(403).body("Le match auquel vous souhaitez ajouter cette partie n'existe pas");
         }
 
         return response;
@@ -51,17 +67,27 @@ public class PartieController {
     @PutMapping("/admin/modifierPartie")
     public ResponseEntity<String> modiferPartie(@RequestBody PartieRequest request) {
         ResponseEntity<String> response = null;
-        Match match = database.getMatchParId(request.getId_match());
 
-        Partie partie = database.getPartieParId(request.getId_partie());
-        partie.setScore1(request.getScore1());
-        partie.setScore2(request.getScore2());
+        try {
+            Partie partie = database.getPartieParId(request.getId_partie());
+            if (partie == null) {
+                throw new ExistePasException();
+            }
 
-        if (database.modifierPartie(partie) != null) {
+            valideRequest(request);
 
-            response = ResponseEntity.ok("Partie modifié");
-        } else {
-            response = ResponseEntity.status(403).body("Partie non modifié");
+            partie.setScore1(request.getScore1());
+            partie.setScore2(request.getScore2());
+
+            if (database.modifierPartie(partie) != null) {
+                response = ResponseEntity.ok("La partie a été modifié avec succès");
+            } else {
+                response = ResponseEntity.status(403).body("La partie n'a pas pu être modifié");
+            }
+        } catch (ManqueInfoException e) {
+            response = ResponseEntity.status(403).body("Les informations fournies ne sont pas valides");
+        } catch (ExistePasException e) {
+            response = ResponseEntity.status(403).body("Le partie que vous souhaitez modifié n'existe pas");
         }
 
         return response;
@@ -83,6 +109,12 @@ public class PartieController {
     @PostMapping("partieParId")
     public Partie partieParId(@RequestBody PartieRequest request) {
         return database.getPartieParId(request.getId_partie());
+    }
+
+    private void valideRequest(PartieRequest request) throws ManqueInfoException {
+        if (request.getScore1() < 0 || request.getScore2() < 0) {
+            throw new ManqueInfoException();
+        }
     }
 
 
