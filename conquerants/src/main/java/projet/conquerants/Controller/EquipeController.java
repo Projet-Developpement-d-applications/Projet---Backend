@@ -1,16 +1,18 @@
 package projet.conquerants.Controller;
 
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 import projet.conquerants.Exception.ExisteDejaException;
 import projet.conquerants.Exception.ExistePasException;
 import projet.conquerants.Exception.ManqueInfoException;
 import projet.conquerants.Model.Equipe;
 import projet.conquerants.Model.Jeu;
-import projet.conquerants.Model.Saison;
 import projet.conquerants.Model.Request.EquipeRequest;
+import projet.conquerants.Model.Saison;
 import projet.conquerants.Service.DatabaseService;
 import projet.conquerants.Service.ValidationService;
 
@@ -102,11 +104,10 @@ public class EquipeController {
     }
 
     private Equipe creerEquipeTemp(EquipeRequest request) throws RuntimeException {
-        valideCreerRequest(request);
-
         Jeu jeu = database.getJeuParNom(request.getJeu());
         Saison saison = database.getSaisonParDebut(request.getSaison());
 
+        valideCreerRequest(request, jeu, saison);
         valideEquipeExistePas(request.getNom(), jeu, saison);
 
         return new Equipe(request.getNom(), request.getDivision(), jeu, saison);
@@ -133,10 +134,10 @@ public class EquipeController {
         }
     }
 
-    private void valideCreerRequest(EquipeRequest request) throws ManqueInfoException {
+    private void valideCreerRequest(EquipeRequest request, Jeu jeu, Saison saison) throws ManqueInfoException {
         if (!validation.valideStringOfCharAndDigitsWithSpace(request.getNom()) || !validation.valideStringOfCharAndDigitsWithSpace(request.getJeu()) ||
-                !validation.valideStringOfCharAndDigits(request.getSaison()) || database.getJeuParNom(request.getJeu()) == null
-                || database.getSaisonParDebut(request.getSaison()) == null) {
+                !validation.valideStringOfCharAndDigits(request.getSaison()) || jeu == null
+                || saison == null) {
             throw new ManqueInfoException();
         }
     }

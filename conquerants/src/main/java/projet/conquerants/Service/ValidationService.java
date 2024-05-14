@@ -28,9 +28,9 @@ public class ValidationService {
         return isValid;
     }
 
-    public boolean valideStringOfCharWithSpace(String value) {
+    public boolean valideStringOfNomPrenom(String value) {
         boolean isValid = false;
-        String regex = "[\\p{L} '\\p{M}]+";
+        String regex = "[\\p{L}-]+";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(value);
 

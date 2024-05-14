@@ -4,6 +4,7 @@ import java.util.Date;
 
 public class JoueurRequest {
 
+    private int id;
     private String prenom;
     private String nom;
     private String pseudo;
@@ -43,5 +44,9 @@ public class JoueurRequest {
 
     public String getEquipe() {
         return equipe;
+    }
+
+    public int getId() {
+        return id;
     }
 }

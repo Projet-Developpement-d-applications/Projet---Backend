@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import projet.conquerants.Model.*;
 import projet.conquerants.Repository.*;
 
+import javax.swing.text.html.Option;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -172,5 +173,9 @@ public class DatabaseService {
 
     public void modifierPrediction(Prediction p) {
         predictionRepository.save(p);
+    }
+
+    public Optional<Joueur> getJoueurParId(int id) {
+        return joueurRepository.findById(id);
     }
 }

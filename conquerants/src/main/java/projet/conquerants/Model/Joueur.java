@@ -110,6 +110,10 @@ public class Joueur {
         this.equipe = equipe;
     }
 
+    public void setDate_naissance(Date date_naissance) {
+        this.date_naissance = date_naissance;
+    }
+
     @Override
     public String toString() {
         return "Joueur{" +
