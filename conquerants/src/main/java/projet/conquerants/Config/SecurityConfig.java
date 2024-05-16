@@ -38,7 +38,7 @@ public class SecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
-                        req -> req.requestMatchers("/connexion", "/inscription", "/matchDeLaSemaine")
+                        req -> req.requestMatchers("/connexion", "/inscription", "/noAuth/**")
                                 .permitAll()
                                 .requestMatchers("/admin/**")
                                 .hasAuthority("ADMIN")

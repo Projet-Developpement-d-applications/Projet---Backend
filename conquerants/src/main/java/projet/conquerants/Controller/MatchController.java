@@ -43,7 +43,7 @@ public class MatchController {
         return database.getMatchParId(request.getId_match());
     }
 
-    @GetMapping("matchDeLaSemaine")
+    @GetMapping("/noAuth/matchDeLaSemaine")
     public List<Match> matchDeLaSemaine() {
         Calendar calendar = new GregorianCalendar();
         calendar.add(Calendar.DAY_OF_YEAR, -7);
@@ -51,6 +51,13 @@ public class MatchController {
         Date fin = new Date();
 
         return database.getMatchDeLaSemaine(debut, fin);
+    }
+
+    @GetMapping("/noAuth/matchAVenir")
+    public List<Match> matchAVenir() {
+        Date now = new Date();
+
+        return database.getMatchAVenir(now);
     }
 
     @PostMapping("/admin/nouveauMatch")

@@ -132,7 +132,7 @@ public class DatabaseService {
     }
 
     public List<Match> getMatchDeLaSemaine(Date debut, Date fin) {
-        return matchRepository.findAllByDateBetween(debut, fin);
+        return matchRepository.findAllByDateBetween(debut, fin).stream().filter(Match::getJouer).toList();
     }
 
     public Partie createPartie(Partie partie) {
@@ -181,5 +181,9 @@ public class DatabaseService {
 
     public Prediction getPredictionParUtilisateurEtMatch(Utilisateur utilisateur, Match match) {
         return predictionRepository.findByMatchAndUtilisateur(match, utilisateur);
+    }
+
+    public List<Match> getMatchAVenir(Date now) {
+        return matchRepository.findAllByDateAfter(now).stream().filter(match -> !match.getJouer()).toList();
     }
 }
