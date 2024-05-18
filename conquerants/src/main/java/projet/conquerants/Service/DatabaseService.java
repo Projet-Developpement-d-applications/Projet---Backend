@@ -186,4 +186,8 @@ public class DatabaseService {
     public List<Match> getMatchAVenir(Date now) {
         return matchRepository.findAllByDateAfter(now).stream().filter(match -> !match.getJouer()).toList();
     }
+
+    public List<Jeu> getJeux() {
+        return jeuRepository.findAll();
+    }
 }
