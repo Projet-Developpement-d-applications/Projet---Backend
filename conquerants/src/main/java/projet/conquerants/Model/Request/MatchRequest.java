@@ -14,7 +14,7 @@ public class MatchRequest {
     private int id_equipe2;
     private int score1;
     private int score2;
-    private Date date;
+    private String date;
     private boolean jouer;
 
     public int getId_match() {
@@ -25,7 +25,7 @@ public class MatchRequest {
         return id_equipe;
     }
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 

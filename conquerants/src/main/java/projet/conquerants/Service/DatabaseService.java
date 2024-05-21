@@ -190,4 +190,16 @@ public class DatabaseService {
     public List<Jeu> getJeux() {
         return jeuRepository.findAll();
     }
+
+    public List<Saison> getSaisons() {
+        return saisonRepository.findAll();
+    }
+
+    public List<Position> getPositions() {
+        return positionRepository.findAll();
+    }
+
+    public List<Position> getPositionParJeu(Jeu jeu) {
+        return positionRepository.findByJeu(jeu);
+    }
 }
