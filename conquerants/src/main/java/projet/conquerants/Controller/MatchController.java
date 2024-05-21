@@ -12,7 +12,7 @@ import projet.conquerants.Model.Prediction;
 import projet.conquerants.Model.Request.MatchRequest;
 import projet.conquerants.Service.DatabaseService;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
@@ -165,11 +165,11 @@ public class MatchController {
         }
     }
 
-    private Date formatDate(String date){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDate localDate = LocalDate.parse(date, formatter);
+    private Date formatDate(String date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+        LocalDateTime localDateTime = LocalDateTime.parse(date.replace(" ", "T"), formatter);
 
-        // Convert LocalDate to Date
-        return java.sql.Date.valueOf(localDate);
+        // Convert LocalDateTime to Date
+        return java.sql.Timestamp.valueOf(localDateTime);
     }
 }
