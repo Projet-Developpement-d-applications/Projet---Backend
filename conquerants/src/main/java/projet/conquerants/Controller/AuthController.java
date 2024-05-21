@@ -31,10 +31,8 @@ public class AuthController {
 
         try {
             response = ResponseEntity.ok(authService.connexion(connexionRequest));
-        } catch (ExistePasException e) {
-            response = ResponseEntity.status(403).body(new ExceptionResponse("L'utilisateur n'existe pas"));
-        } catch (MauvaisMotPasseException e) {
-            response = ResponseEntity.status(403).body(new ExceptionResponse("Mauvais mot de passe"));
+        } catch (ExistePasException | MauvaisMotPasseException e) {
+            response = ResponseEntity.status(403).body(new ExceptionResponse("Le pseudonyme ou le mot de passe est invalide"));
         }
 
         return response;
@@ -47,9 +45,9 @@ public class AuthController {
         try {
             response = ResponseEntity.ok(authService.inscription(inscriptionRequest));
         } catch (ManqueInfoException e) {
-            response = ResponseEntity.status(403).body(new ExceptionResponse("Information non conforme"));
+            response = ResponseEntity.status(403).body(new ExceptionResponse("Les informations fournies ne sont pas conforme"));
         } catch (ExisteDejaException e) {
-            response = ResponseEntity.status(403).body(new ExceptionResponse("Ce pseudo est déjà utilisé"));
+            response = ResponseEntity.status(403).body(new ExceptionResponse("Ce pseudonyme est déjà utilisé"));
         }
 
         return response;
