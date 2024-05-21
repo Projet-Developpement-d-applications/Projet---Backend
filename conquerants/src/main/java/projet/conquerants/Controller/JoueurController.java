@@ -1,6 +1,5 @@
 package projet.conquerants.Controller;
 
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +14,9 @@ import projet.conquerants.Model.Request.JoueurRequest;
 import projet.conquerants.Service.DatabaseService;
 import projet.conquerants.Service.ValidationService;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -157,8 +159,10 @@ public class JoueurController {
         valideRequest(request, jeu, saison, equipe);
         valideExisteDeja(request.getPseudo(), jeu, saison);
 
+        Date date = formatDate(request.getDate_naissance());
+
         return new Joueur(request.getPrenom(), request.getNom(), request.getPseudo(),
-                request.getDate_naissance(), position, equipe, jeu, saison);
+                date, position, equipe, jeu, saison);
     }
 
     private List<Joueur> creerJoueursTemp(List<JoueurRequest> request) throws RuntimeException {
@@ -182,10 +186,12 @@ public class JoueurController {
             valideExisteDeja(request.getPseudo(), jeu, saison);
         }
 
+        Date date = formatDate(request.getDate_naissance());
+
         joueurTemp.setPrenom(request.getPrenom());
         joueurTemp.setNom(request.getNom());
         joueurTemp.setPseudo(request.getPseudo());
-        joueurTemp.setDate_naissance(request.getDate_naissance());
+        joueurTemp.setDate_naissance(date);
         joueurTemp.setEquipe(equipe);
         joueurTemp.setPosition(position);
 
@@ -208,12 +214,20 @@ public class JoueurController {
     }
 
     private void valideRequest(JoueurRequest request, Jeu jeu, Saison saison, Equipe equipe) throws ManqueInfoException {
+        Date date = formatDate(request.getDate_naissance());
+
         if (!validation.valideStringOfNomPrenom(request.getPrenom()) || !validation.valideStringOfNomPrenom(request.getNom()) ||
-                !validation.valideStringOfCharAndDigitsWithSpace(request.getPseudo()) || request.getDate_naissance() == null ||
+                !validation.valideStringOfCharAndDigitsWithSpace(request.getPseudo()) || date == null ||
                 jeu == null || saison == null || equipe == null) {
             throw new ManqueInfoException();
         }
     }
 
+    private Date formatDate(String date){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate localDate = LocalDate.parse(date, formatter);
 
+        // Convert LocalDate to Date
+        return java.sql.Date.valueOf(localDate);
+    }
 }

@@ -1,6 +1,5 @@
 package projet.conquerants.Controller;
 
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +12,8 @@ import projet.conquerants.Model.Prediction;
 import projet.conquerants.Model.Request.MatchRequest;
 import projet.conquerants.Service.DatabaseService;
 
-import javax.crypto.Mac;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -70,7 +70,9 @@ public class MatchController {
 
             valideRequest(request, equipe1, equipe2);
 
-            Match match = new Match(request.getScore1(), request.getScore2(), request.getDate(),
+            Date date = formatDate(request.getDate());
+
+            Match match = new Match(request.getScore1(), request.getScore2(), date,
                     equipe1, equipe2);
 
             if (database.createMatch(match) != null) {
@@ -100,9 +102,11 @@ public class MatchController {
                 throw new ExistePasException();
             }
 
+            Date date = formatDate(request.getDate());
+
             match.setEquipe1(equipe1);
             match.setEquipe2(equipe2);
-            match.setDate_match(request.getDate());
+            match.setDate_match(date);
             match.setScore1(request.getScore1());
             match.setScore2(request.getScore2());
             match.setJouer(request.getJouer());
@@ -153,9 +157,19 @@ public class MatchController {
     }
 
     private void valideRequest(MatchRequest request, Equipe equipe1, Equipe equipe2) throws ManqueInfoException {
-        if (request.getScore1() < 0 || request.getScore2() < 0 || request.getDate() == null ||
+        Date date = formatDate(request.getDate());
+
+        if (request.getScore1() < 0 || request.getScore2() < 0 || date == null ||
                 equipe1 == null || equipe2 == null) {
             throw new ManqueInfoException();
         }
+    }
+
+    private Date formatDate(String date){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate localDate = LocalDate.parse(date, formatter);
+
+        // Convert LocalDate to Date
+        return java.sql.Date.valueOf(localDate);
     }
 }

@@ -8,7 +8,7 @@ public class JoueurRequest {
     private String prenom;
     private String nom;
     private String pseudo;
-    private Date date_naissance;
+    private String date_naissance;
     private String jeu;
     private String saison;
     private String position;
@@ -26,7 +26,7 @@ public class JoueurRequest {
         return pseudo;
     }
 
-    public Date getDate_naissance() {
+    public String getDate_naissance() {
         return date_naissance;
     }
 
