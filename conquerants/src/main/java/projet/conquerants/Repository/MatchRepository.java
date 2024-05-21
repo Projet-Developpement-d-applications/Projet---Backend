@@ -16,5 +16,5 @@ public interface MatchRepository extends CrudRepository<Match, Integer> {
 
     List<Match> findAllByDateBetween(Date date1, Date date2);
 
-    List<Match> findAllByDateAfter(Date date);
+    List<Match> findAllByDateAfterOrderByDate(Date date);
 }
