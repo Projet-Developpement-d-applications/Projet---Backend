@@ -108,7 +108,7 @@ public class EquipeController {
         Saison saison = database.getSaisonParDebut(request.getSaison());
 
         valideCreerRequest(request, jeu, saison);
-        valideEquipeExistePas(request.getNom(), jeu, saison);
+        valideEquipeExistePas(request, jeu, saison);
 
         return new Equipe(request.getNom(), request.getDivision(), jeu, saison);
     }
@@ -121,15 +121,16 @@ public class EquipeController {
         }
 
         valideModifierRequest(request);
-        valideEquipeExistePas(request.getNom(), equipe.getJeu(), equipe.getSaison());
+        valideEquipeExistePas(request, equipe.getJeu(), equipe.getSaison());
 
         equipe.setNom(request.getNom());
         equipe.setDivision(request.getDivision());
         return equipe;
     }
 
-    private void valideEquipeExistePas(String nom, Jeu jeu, Saison saison) throws ExisteDejaException {
-        if (database.getEquipeParNom(nom, jeu, saison) != null) {
+    private void valideEquipeExistePas(EquipeRequest request, Jeu jeu, Saison saison) throws ExisteDejaException {
+        Equipe equipeTemp = database.getEquipeParNom(request.getNom(), jeu, saison);
+        if (equipeTemp != null && equipeTemp.getId() != request.getId()) {
             throw new ExisteDejaException();
         }
     }
