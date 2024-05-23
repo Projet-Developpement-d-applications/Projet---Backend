@@ -31,7 +31,7 @@ public class EquipeController {
         this.validation = validation;
     }
 
-    @PostMapping("/noAuth/equipeParJeu")
+    @PostMapping("equipeParJeu")
     public List<Equipe> equipeParJeu(@RequestBody EquipeRequest request) {
         List<Equipe> retour = new ArrayList<>();
 
