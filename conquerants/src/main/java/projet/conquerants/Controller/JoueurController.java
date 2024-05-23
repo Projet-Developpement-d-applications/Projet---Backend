@@ -52,9 +52,7 @@ public class JoueurController {
     public List<Joueur> joueurParEquipe(@RequestBody JoueurRequest request) {
         List<Joueur> retour = new ArrayList<>();
 
-        Jeu jeu = database.getJeuParNom(request.getJeu());
-        Saison saison = database.getSaisonParDebut(request.getSaison());
-        Equipe equipe = database.getEquipeParNom(request.getEquipe(), jeu, saison);
+        Equipe equipe = database.getEquipeParId(request.getEquipe());
 
         List<Joueur> joueurs = database.getJoueursParEquipe(equipe);
         if (!joueurs.isEmpty()) {
@@ -153,7 +151,7 @@ public class JoueurController {
     private Joueur creerJoueurTemp(JoueurRequest request) throws RuntimeException {
         Jeu jeu = database.getJeuParNom(request.getJeu());
         Saison saison = database.getSaisonParDebut(request.getSaison());
-        Equipe equipe = database.getEquipeParNom(request.getEquipe(), jeu, saison);
+        Equipe equipe = database.getEquipeParId(request.getEquipe());
         Position position = database.getPositionParNom(request.getPosition());
 
         valideRequest(request, jeu, saison, equipe);
@@ -179,7 +177,7 @@ public class JoueurController {
         Saison saison = database.getSaisonParDebut(request.getSaison());
         Joueur joueurTemp = database.getJoueurParId(request.getId()).orElseThrow();
         Position position = database.getPositionParNom(request.getPosition());
-        Equipe equipe = database.getEquipeParNom(request.getEquipe(), jeu, saison);
+        Equipe equipe = database.getEquipeParId(request.getEquipe());
 
         valideRequest(request, jeu, saison, equipe);
         if (!Objects.equals(joueurTemp.getPseudo(), request.getPseudo())) {

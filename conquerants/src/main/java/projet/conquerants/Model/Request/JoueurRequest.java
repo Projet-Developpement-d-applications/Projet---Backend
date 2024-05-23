@@ -12,7 +12,7 @@ public class JoueurRequest {
     private String jeu;
     private String saison;
     private String position;
-    private String equipe;
+    private int equipe;
 
     public String getPrenom() {
         return prenom;
@@ -42,7 +42,7 @@ public class JoueurRequest {
         return position;
     }
 
-    public String getEquipe() {
+    public int getEquipe() {
         return equipe;
     }
 

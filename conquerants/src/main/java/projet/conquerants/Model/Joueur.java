@@ -34,7 +34,6 @@ public class Joueur {
     private Jeu jeu;
     @ManyToOne
     @JoinColumn(name = "id_saison")
-    @JsonIgnore
     private Saison saison;
     @OneToMany(mappedBy = "joueur")
     private List<Statistique> statistiques = new ArrayList<>();
