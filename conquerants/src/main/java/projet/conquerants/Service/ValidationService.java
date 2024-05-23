@@ -63,7 +63,7 @@ public class ValidationService {
 
     public boolean validePasswordString(String value) {
         boolean isValid = false;
-        String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{8,}$";
+        String regex = "^(?=.*[0-9])(?=.*[a-zA-Z@#$%^&+=!]).{8,}$";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(value);
 
