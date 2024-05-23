@@ -26,7 +26,7 @@ public class Joueur {
     private Position position;
     @ManyToOne
     @JoinColumn(name = "id_equipe")
-    @JsonIgnoreProperties({"id", "jeu", "saison"})
+    @JsonIgnoreProperties({"jeu", "saison"})
     private Equipe equipe;
     @ManyToOne
     @JoinColumn(name = "id_jeu")
