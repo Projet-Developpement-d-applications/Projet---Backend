@@ -3,6 +3,7 @@ package projet.conquerants.Controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import projet.conquerants.Exception.ExisteDejaException;
 import projet.conquerants.Exception.ExistePasException;
 import projet.conquerants.Exception.ManqueInfoException;
 import projet.conquerants.Model.Equipe;
@@ -14,10 +15,7 @@ import projet.conquerants.Service.DatabaseService;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
+import java.util.*;
 
 @RestController
 public class MatchController {
@@ -69,6 +67,7 @@ public class MatchController {
             Equipe equipe2 = database.getEquipeParId(request.getId_equipe2());
 
             valideRequest(request, equipe1, equipe2);
+            valideExisteDeja(request, equipe1, equipe2);
 
             Date date = formatDate(request.getDate());
 
@@ -82,6 +81,8 @@ public class MatchController {
             }
         } catch (ManqueInfoException e) {
             response = ResponseEntity.status(403).body("Les informations fournies ne sont pas valides");
+        } catch (ExisteDejaException e) {
+            response = ResponseEntity.status(403).body("Un match existe déjà à cette date");
         }
 
         return response;
@@ -162,6 +163,14 @@ public class MatchController {
         if (request.getScore1() < 0 || request.getScore2() < 0 || date == null ||
                 equipe1 == null || equipe2 == null) {
             throw new ManqueInfoException();
+        }
+    }
+
+    private void valideExisteDeja(MatchRequest request, Equipe equipe1, Equipe equipe2) throws ExisteDejaException {
+        List<Match> matches = database.getMatchsParEquipe(equipe1).stream().filter(match -> match.getEquipe2().getId() == equipe2.getId()).toList();
+
+        if (matches.stream().anyMatch(match -> Objects.equals(match.getDate_match(), formatDate(request.getDate())))) {
+            throw new ExisteDejaException();
         }
     }
 
