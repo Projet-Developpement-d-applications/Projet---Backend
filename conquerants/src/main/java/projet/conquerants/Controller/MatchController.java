@@ -33,7 +33,7 @@ public class MatchController {
     public List<Match> matchParEquipe(@RequestBody MatchRequest request) {
         Equipe equipe = database.getEquipeParId(request.getId_equipe());
 
-        List<Match> matchs = database.getMatchsParEquipe(equipe).stream().filter(match -> match.getDate_match().getTime() < new Date().getTime()).toList();
+        List<Match> matchs = database.getMatchsParEquipe(equipe);
 
         return matchs;
     }
