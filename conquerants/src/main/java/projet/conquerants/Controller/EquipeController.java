@@ -46,6 +46,21 @@ public class EquipeController {
         return retour;
     }
 
+    @PostMapping("/noAuth/equipeLimoilouParJeu")
+    public List<Equipe> equipeLimoilouParJeu(@RequestBody EquipeRequest request) {
+        List<Equipe> retour = new ArrayList<>();
+
+        Jeu jeu = database.getJeuParNom(request.getJeu());
+        Saison saison = database.getSaisonParDebut(request.getSaison());
+
+        List<Equipe> equipes = database.getEquipeParJeu(jeu, saison);
+        if (!equipes.isEmpty()) {
+            retour = equipes.stream().filter(equipe -> equipe.getNom().contains("Conquérants")).toList();
+        }
+        
+        return retour;
+    }
+
     @PostMapping("equipeParNom")
     public Equipe equipeParNom(@RequestBody EquipeRequest request) {
         Equipe retour = null;

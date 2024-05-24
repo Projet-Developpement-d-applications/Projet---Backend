@@ -71,6 +71,10 @@ public class Equipe {
         this.division = division;
     }
 
+    public List<Joueur> getJoueurs() {
+        return joueurs;
+    }
+
     @Override
     public String toString() {
         return "Equipe{" +
