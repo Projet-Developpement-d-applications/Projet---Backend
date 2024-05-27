@@ -2,10 +2,7 @@ package projet.conquerants.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import projet.conquerants.Exception.ExisteDejaException;
 import projet.conquerants.Exception.ExistePasException;
 import projet.conquerants.Exception.ManqueInfoException;
@@ -31,6 +28,18 @@ public class JoueurController {
     public JoueurController(DatabaseService database, ValidationService validation) {
         this.database = database;
         this.validation = validation;
+    }
+
+    @GetMapping("/noAuth/getAllJoueurs")
+    public List<Joueur> getJoueurs() {
+        List<Joueur> retour = null;
+
+        List<Joueur> joueur = database.getJoueurs();
+        if (joueur != null) {
+            retour = joueur;
+        }
+
+        return retour;
     }
 
     @PostMapping("/noAuth/joueursParJeu")

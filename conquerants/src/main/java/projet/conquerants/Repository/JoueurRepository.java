@@ -12,4 +12,5 @@ public interface JoueurRepository extends CrudRepository<Joueur, Integer> {
     Joueur findByPseudoAndJeuAndSaison(String pseudo, Jeu jeu, Saison saison);
     List<Joueur> findAllByEquipe(Equipe equipe);
     List<Joueur> findAllByJeuAndSaison(Jeu jeu, Saison saison);
+    List<Joueur> findAll();
 }
