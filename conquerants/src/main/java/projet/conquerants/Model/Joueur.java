@@ -89,6 +89,10 @@ public class Joueur {
         return saison;
     }
 
+    public List<Statistique> getStatistiques() {
+        return statistiques;
+    }
+
     public void setPrenom(String prenom) {
         this.prenom = prenom;
     }

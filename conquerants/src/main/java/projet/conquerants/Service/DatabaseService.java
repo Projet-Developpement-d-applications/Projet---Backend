@@ -202,4 +202,7 @@ public class DatabaseService {
     public List<Position> getPositionParJeu(Jeu jeu) {
         return positionRepository.findByJeu(jeu);
     }
+    public List<Joueur> getJoueursParJeu(Jeu jeu, Saison saison) {
+        return joueurRepository.findAllByJeuAndSaison(jeu, saison);
+    }
 }

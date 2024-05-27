@@ -33,6 +33,21 @@ public class JoueurController {
         this.validation = validation;
     }
 
+    @PostMapping("/noAuth/joueursParJeu")
+    public List<Joueur> joueursParJeu(@RequestBody JoueurRequest request) {
+        List<Joueur> retour = null;
+
+        Jeu jeu = database.getJeuParNom(request.getJeu());
+        Saison saison = database.getSaisonParDebut(request.getSaison());
+
+        List<Joueur> joueur = database.getJoueursParJeu(jeu, saison);
+        if (joueur != null) {
+            retour = joueur;
+        }
+
+        return retour;
+    }
+
     @PostMapping("joueurParPseudo")
     public Joueur joueurParPseudo(@RequestBody JoueurRequest request) {
         Joueur retour = null;
