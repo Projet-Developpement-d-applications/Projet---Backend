@@ -43,6 +43,14 @@ public class Equipe {
         this.saison = saison;
     }
 
+    public Equipe(int id, String nom, int division, Jeu jeu, Saison saison) {
+        this.id = id;
+        this.nom = nom;
+        this.division = division;
+        this.jeu = jeu;
+        this.saison = saison;
+    }
+
     public int getId() {
         return id;
     }

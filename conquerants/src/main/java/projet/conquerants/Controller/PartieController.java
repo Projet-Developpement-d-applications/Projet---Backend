@@ -3,10 +3,7 @@ package projet.conquerants.Controller;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import projet.conquerants.Exception.ExisteDejaException;
 import projet.conquerants.Exception.ExistePasException;
 import projet.conquerants.Exception.ManqueInfoException;
@@ -18,6 +15,7 @@ import projet.conquerants.Service.DatabaseService;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = {"http://localhost:3000", "https://projet-web-acac.vercel.app"}, allowCredentials = "true")
 public class PartieController {
 
     private DatabaseService database;

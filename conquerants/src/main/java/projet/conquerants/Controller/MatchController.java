@@ -18,6 +18,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @RestController
+@CrossOrigin(origins = {"http://localhost:3000", "https://projet-web-acac.vercel.app"}, allowCredentials = "true")
 public class MatchController {
 
     private DatabaseService database;
@@ -39,6 +40,15 @@ public class MatchController {
     @PostMapping("matchParId")
     public Match matchParId(@RequestBody MatchRequest request) {
         return database.getMatchParId(request.getId_match());
+    }
+
+    @GetMapping("/noAuth/matchs")
+    public List<Match> matchs() {
+        List<Match> matchs = new ArrayList<>();
+
+        matchs = database.getMatchs();
+
+        return matchs;
     }
 
     @GetMapping("/noAuth/matchDeLaSemaine")

@@ -12,6 +12,9 @@ public class AuthenticationResponse implements IResponse {
         this.pseudo = pseudo;
     }
 
+    public AuthenticationResponse(String pseudo, String role) {
+    }
+
     public String getToken() {
         return token;
     }
