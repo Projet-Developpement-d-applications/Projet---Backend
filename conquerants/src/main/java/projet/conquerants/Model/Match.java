@@ -1,5 +1,6 @@
 package projet.conquerants.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,9 +18,11 @@ public class Match {
     private Date date;
     @ManyToOne
     @JoinColumn(name = "id_equipe1")
+    @JsonIgnoreProperties("joueurs")
     private Equipe equipe1;
     @ManyToOne
     @JoinColumn(name = "id_equipe2")
+    @JsonIgnoreProperties("joueurs")
     private Equipe equipe2;
     private boolean jouer;
     @OneToMany(mappedBy = "match")

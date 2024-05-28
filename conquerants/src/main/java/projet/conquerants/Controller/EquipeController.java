@@ -2,10 +2,7 @@ package projet.conquerants.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import projet.conquerants.Exception.ExisteDejaException;
 import projet.conquerants.Exception.ExistePasException;
 import projet.conquerants.Exception.ManqueInfoException;
@@ -20,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = {"http://localhost:3000", "https://projet-web-acac.vercel.app"}, allowCredentials = "true")
 public class EquipeController {
 
     private DatabaseService database;
@@ -46,6 +44,18 @@ public class EquipeController {
         return retour;
     }
 
+    @GetMapping("/noAuth/toutesEquipesLimoilou")
+    public List<Equipe> equipesLimoilou() {
+        List<Equipe> equipes = new ArrayList<>();
+
+        equipes = database.getEquipes().stream()
+                .filter(equipe -> equipe.getNom().contains("Conquérants"))
+                .map(equipe -> new Equipe(equipe.getId(), equipe.getNom(), equipe.getDivision(), equipe.getJeu(), equipe.getSaison()))
+                .toList();
+
+        return equipes;
+    }
+
     @PostMapping("/noAuth/equipeLimoilouParJeu")
     public List<Equipe> equipeLimoilouParJeu(@RequestBody EquipeRequest request) {
         List<Equipe> retour = new ArrayList<>();
@@ -57,7 +67,7 @@ public class EquipeController {
         if (!equipes.isEmpty()) {
             retour = equipes.stream().filter(equipe -> equipe.getNom().contains("Conquérants")).toList();
         }
-        
+
         return retour;
     }
 

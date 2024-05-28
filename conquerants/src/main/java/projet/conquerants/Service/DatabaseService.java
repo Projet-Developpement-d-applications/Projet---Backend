@@ -214,4 +214,12 @@ public class DatabaseService {
     public List<Joueur> getJoueurs() {
         return joueurRepository.findAll();
     }
+
+    public List<Equipe> getEquipes() {
+        return equipeRepository.findAll();
+    }
+
+    public List<Match> getMatchs() {
+        return matchRepository.findAllByJouerIs(true);
+    }
 }

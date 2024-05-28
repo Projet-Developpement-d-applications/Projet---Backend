@@ -32,6 +32,14 @@ public class AuthService {
         this.validation = validation;
     }
 
+    public AuthenticationResponse refreshConnexion(String token) {
+        String pseudo = jwtService.extractUsername(token);
+
+        Utilisateur utilisateur = databaseService.getUtilisateur(pseudo).get();
+
+        return new AuthenticationResponse(jwtService.generateToken(utilisateur), utilisateur.getPseudo(), utilisateur.getRole());
+    }
+
     public AuthenticationResponse inscription(InscriptionRequest request) throws RuntimeException {
         validePseudoExistePas(request.getPseudo());
         valideInfoInscription(request);

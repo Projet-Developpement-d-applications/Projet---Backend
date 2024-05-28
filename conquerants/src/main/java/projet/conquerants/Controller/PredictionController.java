@@ -2,6 +2,7 @@ package projet.conquerants.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
+@CrossOrigin(origins = {"http://localhost:3000", "https://projet-web-acac.vercel.app"}, allowCredentials = "true")
 public class PredictionController {
 
     private DatabaseService database;
