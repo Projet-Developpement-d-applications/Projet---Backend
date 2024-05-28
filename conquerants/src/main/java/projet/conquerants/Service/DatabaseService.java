@@ -59,6 +59,10 @@ public class DatabaseService {
         return utilisateurRepository.findByPseudo(pseudo);
     }
 
+    public Utilisateur getUtilisateurParPseudo(String pseudo, String mot_passe) {
+        return utilisateurRepository.findByPseudoAndMot_passe(pseudo, mot_passe);
+    }
+
     public Utilisateur createUtilisateur(Utilisateur utilisateur) {
         return utilisateurRepository.save(utilisateur);
     }
@@ -202,6 +206,7 @@ public class DatabaseService {
     public List<Position> getPositionParJeu(Jeu jeu) {
         return positionRepository.findByJeu(jeu);
     }
+
     public List<Joueur> getJoueursParJeu(Jeu jeu, Saison saison) {
         return joueurRepository.findAllByJeuAndSaison(jeu, saison);
     }
