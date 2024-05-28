@@ -1,6 +1,7 @@
 package projet.conquerants.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -8,9 +9,8 @@ import projet.conquerants.Model.Request.UtilisateurRequest;
 import projet.conquerants.Model.Utilisateur;
 import projet.conquerants.Service.DatabaseService;
 
-import java.util.Optional;
-
 @RestController
+@CrossOrigin(origins = {"http://localhost:3000", "https://projet-web-acac.vercel.app"}, allowCredentials = "true")
 public class UtilisateurController {
 
     private DatabaseService database;
