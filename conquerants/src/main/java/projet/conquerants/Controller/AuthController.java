@@ -21,6 +21,10 @@ import projet.conquerants.Model.Response.IResponse;
 import projet.conquerants.Model.Response.RoleResponse;
 import projet.conquerants.Service.AuthService;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+
 @RestController
 @CrossOrigin(origins = {"http://localhost:3000", "https://projet-web-acac.vercel.app"}, allowCredentials = "true")
 public class AuthController {
@@ -102,11 +106,15 @@ public class AuthController {
     }
 
     private Cookie createCookie(String token) {
+        LocalDateTime expiration = LocalDateTime.now().plusMonths(1);
+        Date expirationDate = Date.from(expiration.atZone(ZoneId.systemDefault()).toInstant());
+        int tempsExpiration = (int) ((expirationDate.getTime() - System.currentTimeMillis()) / 1000);
+
         Cookie cookie = new Cookie(COOKIE_NAME, token);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
-        cookie.setMaxAge(3600);
+        cookie.setMaxAge(tempsExpiration);
 
         return cookie;
     }
