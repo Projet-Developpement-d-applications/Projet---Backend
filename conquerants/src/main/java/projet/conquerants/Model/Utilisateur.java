@@ -21,7 +21,8 @@ public class Utilisateur implements UserDetails {
     private String prenom;
     private String nom;
     private String pseudo;
-    private String mot_passe;
+    @Column(name = "mot_passe")
+    private String motPasse;
     @ManyToOne
     @JoinColumn(name = "id_role")
     @JsonSerialize(using = RoleSerializer.class)
@@ -37,12 +38,12 @@ public class Utilisateur implements UserDetails {
         this.prenom = prenom;
         this.nom = nom;
         this.pseudo = pseudo;
-        this.mot_passe = mot_passe;
+        this.motPasse = mot_passe;
         this.role = role;
     }
 
     public String getMot_passe() {
-        return mot_passe;
+        return motPasse;
     }
 
     public String getPseudo() {
@@ -60,7 +61,7 @@ public class Utilisateur implements UserDetails {
                 ", prenom='" + prenom + '\'' +
                 ", nom='" + nom + '\'' +
                 ", pseudo='" + pseudo + '\'' +
-                ", mot_passe='" + mot_passe + '\'' +
+                ", mot_passe='" + motPasse + '\'' +
                 ", role=" + role +
                 '}';
     }
@@ -72,7 +73,7 @@ public class Utilisateur implements UserDetails {
 
     @Override
     public String getPassword() {
-        return mot_passe;
+        return motPasse;
     }
 
     @Override

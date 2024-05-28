@@ -60,7 +60,7 @@ public class DatabaseService {
     }
 
     public Utilisateur getUtilisateurParPseudo(String pseudo, String mot_passe) {
-        return utilisateurRepository.findByPseudoAndMot_passe(pseudo, mot_passe);
+        return utilisateurRepository.findByPseudoAndMotPasse(pseudo, mot_passe);
     }
 
     public Utilisateur createUtilisateur(Utilisateur utilisateur) {

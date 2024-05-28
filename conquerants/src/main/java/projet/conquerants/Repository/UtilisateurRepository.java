@@ -10,5 +10,5 @@ public interface UtilisateurRepository extends CrudRepository<Utilisateur, Integ
     Optional<Utilisateur> findByPseudo(String pseudo);
     boolean existsByPseudo(String pseudo);
 
-    Utilisateur findByPseudoAndMot_passe(String pseudo, String mot_passe);
+    Utilisateur findByPseudoAndMotPasse(String pseudo, String mot_passe);
 }
