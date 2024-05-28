@@ -57,7 +57,7 @@ public class JoueurController {
         return retour;
     }
 
-    @PostMapping("joueurParPseudo")
+    @PostMapping("/noAuth/joueurParPseudo")
     public Joueur joueurParPseudo(@RequestBody JoueurRequest request) {
         Joueur retour = null;
 
