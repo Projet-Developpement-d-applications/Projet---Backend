@@ -108,11 +108,23 @@ public class AuthController {
     }
 
     @PostMapping("/inscription")
-    public ResponseEntity<IResponse> register(@RequestBody InscriptionRequest inscriptionRequest) {
+    public ResponseEntity<IResponse> register(@RequestBody InscriptionRequest inscriptionRequest, HttpServletResponse servletResponse) {
         ResponseEntity<IResponse> response = null;
 
         try {
-            response = ResponseEntity.ok(authService.inscription(inscriptionRequest));
+            AuthenticationResponse rep = authService.inscription(inscriptionRequest);
+
+            Cookie cookie = createCookie(rep.getToken());
+            servletResponse.addCookie(cookie);
+            servletResponse.setHeader("Set-Cookie", String.format(
+                    "%s=%s; Expires=%s; Max-Age=%d; Path=/; HttpOnly; Secure; SameSite=None",
+                    cookie.getName(),
+                    cookie.getValue(),
+                    Integer.toString(30 * 24 * 60 * 60),
+                    cookie.getMaxAge()
+            ));
+
+            response = ResponseEntity.ok(new RoleResponse(rep.getRole()));
         } catch (ManqueInfoException e) {
             response = ResponseEntity.status(403).body(new ExceptionResponse("Les informations fournies ne sont pas conforme"));
         } catch (ExisteDejaException e) {
