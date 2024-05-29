@@ -31,6 +31,7 @@ public class AuthController {
 
     private AuthService authService;
     private final String COOKIE_NAME = "token";
+    private final int COOKIE_EXPIRATION = (30 * 24 * 60 * 60);
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
@@ -42,9 +43,7 @@ public class AuthController {
     public ResponseEntity<String> deconnexion(HttpServletResponse servletResponse) {
         ResponseEntity<String> response = null;
 
-        Cookie cookie = new Cookie(COOKIE_NAME, null);
-        cookie.setMaxAge(0);
-        cookie.setPath("/");
+        Cookie cookie = createCookie(null, 0);
         servletResponse.addCookie(cookie);
         servletResponse.setHeader("Set-Cookie", String.format(
                 "%s=%s; Expires=%s; Max-Age=%d; Path=/; HttpOnly; Secure; SameSite=None",
@@ -72,13 +71,13 @@ public class AuthController {
             AuthenticationResponse rep = authService.refreshConnexion(token);
 
             if (rep != null) {
-                Cookie cookie = createCookie(rep.getToken());
+                Cookie cookie = createCookie(rep.getToken(), COOKIE_EXPIRATION);
                 servletResponse.addCookie(cookie);
                 servletResponse.setHeader("Set-Cookie", String.format(
                         "%s=%s; Expires=%s; Max-Age=%d; Path=/; HttpOnly; Secure; SameSite=None",
                         cookie.getName(),
                         cookie.getValue(),
-                        Integer.toString(30 * 24 * 60 * 60),
+                        Integer.toString(COOKIE_EXPIRATION),
                         cookie.getMaxAge()
                 ));
 
@@ -96,7 +95,7 @@ public class AuthController {
         try {
             AuthenticationResponse rep = authService.connexion(connexionRequest);
 
-            Cookie cookie = createCookie(rep.getToken());
+            Cookie cookie = createCookie(rep.getToken(), COOKIE_EXPIRATION);
             servletResponse.addCookie(cookie);
             servletResponse.setHeader("Set-Cookie", String.format(
                     "%s=%s; Expires=%s; Max-Age=%d; Path=/; HttpOnly; Secure; SameSite=None",
@@ -121,13 +120,13 @@ public class AuthController {
         try {
             AuthenticationResponse rep = authService.inscription(inscriptionRequest);
 
-            Cookie cookie = createCookie(rep.getToken());
+            Cookie cookie = createCookie(rep.getToken(), COOKIE_EXPIRATION);
             servletResponse.addCookie(cookie);
             servletResponse.setHeader("Set-Cookie", String.format(
                     "%s=%s; Expires=%s; Max-Age=%d; Path=/; HttpOnly; Secure; SameSite=None",
                     cookie.getName(),
                     cookie.getValue(),
-                    Integer.toString(30 * 24 * 60 * 60),
+                    Integer.toString(COOKIE_EXPIRATION),
                     cookie.getMaxAge()
             ));
 
@@ -141,16 +140,12 @@ public class AuthController {
         return response;
     }
 
-    private Cookie createCookie(String token) {
-        LocalDateTime expiration = LocalDateTime.now().plusMonths(1);
-        Date expirationDate = Date.from(expiration.atZone(ZoneId.systemDefault()).toInstant());
-        int tempsExpiration = (int) ((expirationDate.getTime() - System.currentTimeMillis()) / 1000);
-
+    private Cookie createCookie(String token, int expiration) {
         Cookie cookie = new Cookie(COOKIE_NAME, token);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
-        cookie.setMaxAge(tempsExpiration);
+        cookie.setMaxAge(expiration);
 
         return cookie;
     }
