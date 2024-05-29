@@ -46,6 +46,13 @@ public class AuthController {
         cookie.setMaxAge(0);
         cookie.setPath("/");
         servletResponse.addCookie(cookie);
+        servletResponse.setHeader("Set-Cookie", String.format(
+                "%s=%s; Expires=%s; Max-Age=%d; Path=/; HttpOnly; Secure; SameSite=None",
+                cookie.getName(),
+                cookie.getValue(),
+                Integer.toString(0),
+                cookie.getMaxAge()
+        ));
 
         return ResponseEntity.ok("Vous avez été deconnecté");
     }
