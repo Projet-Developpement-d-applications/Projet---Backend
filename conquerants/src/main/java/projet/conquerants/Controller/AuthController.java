@@ -67,8 +67,13 @@ public class AuthController {
             if (rep != null) {
                 Cookie cookie = createCookie(rep.getToken());
                 servletResponse.addCookie(cookie);
-                servletResponse.setHeader("Set-Cookie", String.format("%s=%s; Expires=%s; Max-Age=%d; Path=/; HttpOnly; Secure",
-                        cookie.getName(), cookie.getValue(), Integer.toString(30 * 24 * 60 * 60), cookie.getMaxAge()));
+                servletResponse.setHeader("Set-Cookie", String.format(
+                        "%s=%s; Expires=%s; Max-Age=%d; Path=/; HttpOnly; Secure; SameSite=None",
+                        cookie.getName(),
+                        cookie.getValue(),
+                        Integer.toString(30 * 24 * 60 * 60),
+                        cookie.getMaxAge()
+                ));
 
                 response = ResponseEntity.ok().body(new RoleResponse(rep.getRole()));
             }
@@ -88,10 +93,10 @@ public class AuthController {
             servletResponse.addCookie(cookie);
             servletResponse.setHeader("Set-Cookie", String.format(
                     "%s=%s; Expires=%s; Max-Age=%d; Path=/; HttpOnly; Secure; SameSite=None",
-                    cookie.getName(), // Name of the cookie
-                    cookie.getValue(), // Value of the cookie
-                    Integer.toString(30 * 24 * 60 * 60), // Expires in 30 days (converted to seconds)
-                    cookie.getMaxAge() // Maximum age of the cookie in seconds
+                    cookie.getName(),
+                    cookie.getValue(),
+                    Integer.toString(30 * 24 * 60 * 60),
+                    cookie.getMaxAge()
             ));
 
             response = ResponseEntity.ok(new RoleResponse(rep.getRole()));
