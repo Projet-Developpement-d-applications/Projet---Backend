@@ -55,24 +55,23 @@ public class AuthController {
         ResponseEntity<IResponse> response = null;
 
         String token = null;
-
-        for(Cookie cookie : request.getCookies()) {
-            if (cookie.getName().equals(COOKIE_NAME)) {
-                token = cookie.getValue();
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if (cookie.getName().equals(COOKIE_NAME)) {
+                    token = cookie.getValue();
+                }
             }
-        }
 
-        AuthenticationResponse rep = authService.refreshConnexion(token);
+            AuthenticationResponse rep = authService.refreshConnexion(token);
 
-        if (rep != null) {
-            Cookie cookie = createCookie(rep.getToken());
-            servletResponse.addCookie(cookie);
-            servletResponse.setHeader("Set-Cookie", String.format("%s=%s; Expires=%s; Max-Age=%d; Path=/; HttpOnly; Secure",
-                    cookie.getName(), cookie.getValue(), Integer.toString(30 * 24 * 60 * 60), cookie.getMaxAge()));
+            if (rep != null) {
+                Cookie cookie = createCookie(rep.getToken());
+                servletResponse.addCookie(cookie);
+                servletResponse.setHeader("Set-Cookie", String.format("%s=%s; Expires=%s; Max-Age=%d; Path=/; HttpOnly; Secure",
+                        cookie.getName(), cookie.getValue(), Integer.toString(30 * 24 * 60 * 60), cookie.getMaxAge()));
 
-            response = ResponseEntity.ok().body(new RoleResponse(rep.getRole()));
-        } else {
-            response = ResponseEntity.status(403).body(new ExceptionResponse("Erreur lors du rafraichissement de la connexion"));
+                response = ResponseEntity.ok().body(new RoleResponse(rep.getRole()));
+            }
         }
 
         return response;
