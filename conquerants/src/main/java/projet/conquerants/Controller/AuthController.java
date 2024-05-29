@@ -1,9 +1,7 @@
 package projet.conquerants.Controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +16,8 @@ import projet.conquerants.Model.Request.InscriptionRequest;
 import projet.conquerants.Model.Response.AuthenticationResponse;
 import projet.conquerants.Model.Response.ExceptionResponse;
 import projet.conquerants.Model.Response.IResponse;
-import projet.conquerants.Model.Response.RoleResponse;
+import projet.conquerants.Model.Response.AuthResponse;
 import projet.conquerants.Service.AuthService;
-
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
 
 @RestController
 @CrossOrigin(origins = {"http://localhost:3000", "https://projet-web-acac.vercel.app"}, allowCredentials = "true")
@@ -37,6 +31,26 @@ public class AuthController {
     @Autowired
     public AuthController(AuthService authService) {
         this.authService = authService;
+    }
+
+    @GetMapping("/connexionStatus")
+    public ResponseEntity<Boolean> connexionStatus(HttpServletRequest request) {
+        ResponseEntity<Boolean> response = ResponseEntity.ok(false);
+
+        String token = null;
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if (cookie.getName().equals(COOKIE_NAME)) {
+                    token = cookie.getValue();
+                }
+            }
+
+            if (authService.checkConnexion(token)) {
+                response = ResponseEntity.ok(true);
+            }
+        }
+
+        return response;
     }
 
     @GetMapping("deconnexion")
@@ -81,7 +95,7 @@ public class AuthController {
                         cookie.getMaxAge()
                 ));
 
-                response = ResponseEntity.ok().body(new RoleResponse(rep.getRole()));
+                response = ResponseEntity.ok().body(new AuthResponse(rep.getRole(), rep.getPseudo()));
             }
         }
 
@@ -105,7 +119,7 @@ public class AuthController {
                     cookie.getMaxAge()
             ));
 
-            response = ResponseEntity.ok(new RoleResponse(rep.getRole()));
+            response = ResponseEntity.ok(new AuthResponse(rep.getRole(), rep.getPseudo()));
         } catch (ExistePasException | MauvaisMotPasseException e) {
             response = ResponseEntity.status(403).body(new ExceptionResponse("Le pseudonyme ou le mot de passe est invalide"));
         }
@@ -130,7 +144,7 @@ public class AuthController {
                     cookie.getMaxAge()
             ));
 
-            response = ResponseEntity.ok(new RoleResponse(rep.getRole()));
+            response = ResponseEntity.ok(new AuthResponse(rep.getRole(), rep.getPseudo()));
         } catch (ManqueInfoException e) {
             response = ResponseEntity.status(403).body(new ExceptionResponse("Les informations fournies ne sont pas conforme"));
         } catch (ExisteDejaException e) {

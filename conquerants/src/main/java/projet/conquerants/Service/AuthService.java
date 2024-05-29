@@ -3,6 +3,7 @@ package projet.conquerants.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import projet.conquerants.Exception.ManqueInfoException;
@@ -22,14 +23,24 @@ public class AuthService {
     private JwtService jwtService;
     private AuthenticationManager authenticationManager;
     private ValidationService validation;
+    private UserDetailsServiceImpl userDetailsService;
 
     @Autowired
-    public AuthService(DatabaseService databaseService, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager, ValidationService validation) {
+    public AuthService(DatabaseService databaseService, PasswordEncoder passwordEncoder, JwtService jwtService,
+                       AuthenticationManager authenticationManager, ValidationService validation, UserDetailsServiceImpl userDetailsService) {
         this.databaseService = databaseService;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
         this.validation = validation;
+        this.userDetailsService = userDetailsService;
+    }
+
+    public boolean checkConnexion(String token) {
+        String pseudo = jwtService.extractUsername(token);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(pseudo);
+
+        return jwtService.isValid(token, userDetails);
     }
 
     public AuthenticationResponse refreshConnexion(String token) {
