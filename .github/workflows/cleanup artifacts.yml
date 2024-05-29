@@ -19,4 +19,4 @@ jobs:
       - name: Download artifact
         uses: philips-labs/action-delete-artifacts@v1.0.0
         with:
-          workflow: crawl.yml
+          workflow: main_conquerants.yml
