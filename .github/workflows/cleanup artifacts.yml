@@ -19,10 +19,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          owner="my-org"  # Replace with your organization/team name
+          repo="my-repo"  # Replace with your repository name
           cutoff_date="${{ steps.date.outputs.date }}"
           echo "Deleting artifacts older than $cutoff_date"
-          artifacts=$(gh api repos/{Projet-Developpement-d-applications}/{Projet---Backend}/actions/artifacts | jq -r --arg cutoff_date "$cutoff_date" '.artifacts | .[] | select(.expired == false and .created_at < $cutoff_date) | .id')
+          artifacts=$(gh api repos/$owner/$repo/actions/artifacts | jq -r --arg cutoff_date "$cutoff_date" '.artifacts | .[] | select(.expired == false and .created_at < $cutoff_date) | .id')
           for artifact in $artifacts; do
             echo "Deleting artifact $artifact"
-            gh api -X DELETE repos/{owner}/{repo}/actions/artifacts/$artifact
+            gh api -X DELETE repos/$owner/$repo/actions/artifacts/$artifact
           done
