@@ -21,7 +21,7 @@ public class DatabaseConfig {
 
     private String getDatabaseUrl() {
         // Retrieve database URL from environment variable or configuration
-        return System.getenv("DB_URL");
+        return System.getenv("MYSQLCONNSTR_DB_URL");
     }
 
     private String getDatabaseUsername() {
