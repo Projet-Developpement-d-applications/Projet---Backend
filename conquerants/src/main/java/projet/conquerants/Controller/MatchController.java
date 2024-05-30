@@ -1,17 +1,17 @@
 package projet.conquerants.Controller;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import projet.conquerants.Exception.ExisteDejaException;
 import projet.conquerants.Exception.ExistePasException;
 import projet.conquerants.Exception.ManqueInfoException;
-import projet.conquerants.Model.Equipe;
-import projet.conquerants.Model.Match;
-import projet.conquerants.Model.Partie;
-import projet.conquerants.Model.Prediction;
+import projet.conquerants.Model.*;
 import projet.conquerants.Model.Request.MatchRequest;
 import projet.conquerants.Service.DatabaseService;
+import projet.conquerants.Service.JwtService;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -22,10 +22,12 @@ import java.util.*;
 public class MatchController {
 
     private DatabaseService database;
+    private JwtService jwtService;
 
     @Autowired
-    public MatchController(DatabaseService database) {
+    public MatchController(DatabaseService database, JwtService jwtService) {
         this.database = database;
+        this.jwtService = jwtService;
     }
 
     @PostMapping("matchParEquipe")
@@ -46,7 +48,7 @@ public class MatchController {
     public List<Match> matchs() {
         List<Match> matchs = new ArrayList<>();
 
-        matchs = database.getMatchs();
+        matchs = database.getMatchsJouer();
 
         return matchs;
     }
@@ -65,7 +67,27 @@ public class MatchController {
     public List<Match> matchAVenir() {
         Date now = new Date();
 
-        return database.getMatchAVenir(now);
+        return database.getMatchAVenir(now).stream().filter(match -> !match.getJouer()).toList();
+    }
+
+    @GetMapping("matchSansPrediction")
+    public List<Match> matchSansPrediction(HttpServletRequest request) {
+        String token = null;
+        List<Match> matchsSansPrediction = null;
+
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if (cookie.getName().equals("token")) {
+                    token = cookie.getValue();
+                }
+            }
+
+            Utilisateur utilisateur = database.getUtilisateur(jwtService.extractUsername(token)).orElse(null);
+            List<Integer> idMatchsPredit = database.getPredictionParUtilisateur(utilisateur).stream().map(prediction -> prediction.getMatch().getId()).toList();
+            matchsSansPrediction = database.getMatchsNonJouer().stream().filter(match -> !idMatchsPredit.contains(match.getId())).toList();
+        }
+
+        return matchsSansPrediction;
     }
 
     @PostMapping("/admin/nouveauMatch")

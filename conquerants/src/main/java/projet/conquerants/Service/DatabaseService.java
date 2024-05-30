@@ -219,7 +219,10 @@ public class DatabaseService {
         return equipeRepository.findAll();
     }
 
-    public List<Match> getMatchs() {
+    public List<Match> getMatchsJouer() {
         return matchRepository.findAllByJouerIs(true);
+    }
+    public List<Match> getMatchsNonJouer() {
+        return matchRepository.findAllByJouerIs(false);
     }
 }
