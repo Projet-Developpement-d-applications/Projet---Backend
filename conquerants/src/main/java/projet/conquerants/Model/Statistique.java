@@ -15,4 +15,10 @@ public class Statistique {
     @ManyToOne
     @JoinColumn(name = "id_partie")
     private Partie partie;
+
+    public Statistique(String donnee, Joueur joueur, Partie partie) {
+        this.donnee = donnee;
+        this.joueur = joueur;
+        this.partie = partie;
+    }
 }

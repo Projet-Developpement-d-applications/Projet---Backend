@@ -225,4 +225,8 @@ public class DatabaseService {
     public List<Match> getMatchsNonJouer() {
         return matchRepository.findAllByJouerIs(false);
     }
+
+    public Statistique createStat(Statistique statistique) {
+        return statistiqueRepository.save(statistique);
+    }
 }
