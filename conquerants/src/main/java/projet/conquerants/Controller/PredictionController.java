@@ -51,7 +51,7 @@ public class PredictionController {
                 if (!match.getJouer()) {
                     Prediction prediction = new Prediction(request.getVote(), match, utilisateur);
                     if (database.createPrediction(prediction) != null) {
-                        response = ResponseEntity.status(403).body("La prédiction a été créé avec succès");
+                        response = ResponseEntity.ok("La prédiction a été créé avec succès");
                     } else {
                         response = ResponseEntity.status(403).body("La prédiction n'a pas pu être créé");
                     }
