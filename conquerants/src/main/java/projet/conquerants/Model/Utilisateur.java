@@ -1,7 +1,6 @@
 package projet.conquerants.Model;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -22,6 +21,7 @@ public class Utilisateur implements UserDetails {
     private String nom;
     private String pseudo;
     @Column(name = "mot_passe")
+    @JsonIgnore
     private String motPasse;
     @ManyToOne
     @JoinColumn(name = "id_role")
