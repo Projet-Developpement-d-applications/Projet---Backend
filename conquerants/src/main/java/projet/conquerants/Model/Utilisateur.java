@@ -25,7 +25,6 @@ public class Utilisateur implements UserDetails {
     private String motPasse;
     @ManyToOne
     @JoinColumn(name = "id_role")
-    @JsonSerialize(using = RoleSerializer.class)
     private Role role;
     @OneToMany(mappedBy = "utilisateur")
     private List<Prediction> predictions = new ArrayList<>();
@@ -40,6 +39,14 @@ public class Utilisateur implements UserDetails {
         this.pseudo = pseudo;
         this.motPasse = mot_passe;
         this.role = role;
+    }
+
+    public String getPrenom() {
+        return prenom;
+    }
+
+    public String getNom() {
+        return nom;
     }
 
     public String getMot_passe() {

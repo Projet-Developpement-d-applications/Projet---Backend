@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import projet.conquerants.Model.Request.UtilisateurRequest;
+import projet.conquerants.Model.Response.UtilisateurResponse;
 import projet.conquerants.Model.Utilisateur;
 import projet.conquerants.Service.DatabaseService;
 import projet.conquerants.Service.JwtService;
@@ -23,9 +24,9 @@ public class UtilisateurController {
     }
 
     @GetMapping("/utilisateurInfo")
-    public Utilisateur utilisateurParPseudo(HttpServletRequest request) {
+    public UtilisateurResponse utilisateurParPseudo(HttpServletRequest request) {
         String token = null;
-        Utilisateur retour = null;
+        UtilisateurResponse retour = null;
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
                 if (cookie.getName().equals("token")) {
@@ -35,7 +36,7 @@ public class UtilisateurController {
             Utilisateur utilisateur = database.getUtilisateur(jwtService.extractUsername(token)).orElse(null);
 
             if (utilisateur != null) {
-                retour = utilisateur;
+                retour = new UtilisateurResponse(utilisateur.getNom(), utilisateur.getPrenom(), utilisateur.getPseudo(), utilisateur.getRole());
             }
 
         }
