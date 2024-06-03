@@ -1,5 +1,6 @@
 package projet.conquerants.Service;
 
+import org.bouncycastle.crypto.engines.RSAEngine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,9 +25,10 @@ public class AuthService {
     private AuthenticationManager authenticationManager;
     private ValidationService validation;
     private UserDetailsServiceImpl userDetailsService;
+    private RSADecoderService rsaDecoderService;
 
     @Autowired
-    public AuthService(DatabaseService databaseService, PasswordEncoder passwordEncoder, JwtService jwtService,
+    public AuthService(DatabaseService databaseService, PasswordEncoder passwordEncoder, JwtService jwtService, RSADecoderService rsaDecoderService,
                        AuthenticationManager authenticationManager, ValidationService validation, UserDetailsServiceImpl userDetailsService) {
         this.databaseService = databaseService;
         this.passwordEncoder = passwordEncoder;
@@ -34,6 +36,7 @@ public class AuthService {
         this.authenticationManager = authenticationManager;
         this.validation = validation;
         this.userDetailsService = userDetailsService;
+        this.rsaDecoderService = rsaDecoderService;
     }
 
     public boolean checkConnexion(String token) {
@@ -51,12 +54,14 @@ public class AuthService {
         return new AuthenticationResponse(jwtService.generateToken(utilisateur), utilisateur.getPseudo(), utilisateur.getRole());
     }
 
-    public AuthenticationResponse inscription(InscriptionRequest request) throws RuntimeException {
+    public AuthenticationResponse inscription(InscriptionRequest request) throws Exception {
+        String mdp = rsaDecoderService.decrypt(request.getMot_passe());
+
         validePseudoExistePas(request.getPseudo());
         valideInfoInscription(request);
 
         Utilisateur utilisateur = new Utilisateur(request.getPrenom(), request.getNom(), request.getPseudo(),
-                passwordEncoder.encode(request.getMot_passe()), databaseService.getDefaultRole());
+                passwordEncoder.encode(mdp), databaseService.getDefaultRole());
 
         utilisateur = databaseService.createUtilisateur(utilisateur);
 
@@ -65,12 +70,13 @@ public class AuthService {
         return new AuthenticationResponse(token, utilisateur.getPseudo(), utilisateur.getRole());
     }
 
-    public AuthenticationResponse connexion(ConnexionRequest request) throws RuntimeException {
-        valideCredentials(request.getPseudo(), request.getMot_passe());
+    public AuthenticationResponse connexion(ConnexionRequest request) throws Exception {
+        String mdp = rsaDecoderService.decrypt(request.getMot_passe());
+        valideCredentials(request.getPseudo(), mdp);
 
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 request.getPseudo(),
-                request.getMot_passe()));
+                mdp));
 
         Utilisateur utilisateur = databaseService.getUtilisateur(request.getPseudo()).orElseThrow();
         String token = jwtService.generateToken(utilisateur);

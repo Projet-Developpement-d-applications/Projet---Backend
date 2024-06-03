@@ -45,6 +45,10 @@ public class Utilisateur implements UserDetails {
         return prenom;
     }
 
+    public void setMotPasse(String motPasse) {
+        this.motPasse = motPasse;
+    }
+
     public String getNom() {
         return nom;
     }

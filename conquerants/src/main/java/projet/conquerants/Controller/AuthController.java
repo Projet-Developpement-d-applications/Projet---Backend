@@ -18,6 +18,7 @@ import projet.conquerants.Model.Response.ExceptionResponse;
 import projet.conquerants.Model.Response.IResponse;
 import projet.conquerants.Model.Response.AuthResponse;
 import projet.conquerants.Service.AuthService;
+import projet.conquerants.Service.RSADecoderService;
 
 @RestController
 @CrossOrigin(origins = {"http://localhost:3000", "https://projet-web-acac.vercel.app"}, allowCredentials = "true")
@@ -122,6 +123,8 @@ public class AuthController {
             response = ResponseEntity.ok(new AuthResponse(rep.getRole(), rep.getPseudo()));
         } catch (ExistePasException | MauvaisMotPasseException e) {
             response = ResponseEntity.status(403).body(new ExceptionResponse("Le pseudonyme ou le mot de passe est invalide"));
+        } catch (Exception e) {
+            response = ResponseEntity.status(403).body(new ExceptionResponse("Les informations fournies ne sont pas conformes"));
         }
 
         return response;
@@ -149,6 +152,8 @@ public class AuthController {
             response = ResponseEntity.status(403).body(new ExceptionResponse("Les informations fournies ne sont pas conforme"));
         } catch (ExisteDejaException e) {
             response = ResponseEntity.status(403).body(new ExceptionResponse("Ce pseudonyme est déjà utilisé"));
+        } catch (Exception e) {
+            response = ResponseEntity.status(403).body(new ExceptionResponse("Les informations fournies ne sont pas conformes"));
         }
 
         return response;

@@ -229,4 +229,8 @@ public class DatabaseService {
     public Statistique createStat(Statistique statistique) {
         return statistiqueRepository.save(statistique);
     }
+
+    public Utilisateur modifierUtilisateur(Utilisateur utilisateur) {
+        return utilisateurRepository.save(utilisateur);
+    }
 }
