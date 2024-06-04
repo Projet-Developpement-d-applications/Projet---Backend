@@ -47,6 +47,10 @@ public class StatistiqueController {
         Joueur joueur = database.getJoueurParNom(request.getPseudo(), request.getJeu(), request.getSaison());
         Partie partie = database.getPartieParId(request.getId_partie());
 
+        System.out.println(joueur);
+        System.out.println(partie);
+        System.out.println(request.getDonnee());
+
         return new Statistique(request.getDonnee(), joueur, partie);
     }
 }
