@@ -39,8 +39,9 @@ public class PartieController {
             valideRequest(request);
 
             Partie partie = new Partie(request.getScore1(), request.getScore2(), match);
+            Partie createdPartie = database.createPartie(partie);
 
-            if (database.createPartie(partie) != null) {
+            if (createdPartie != null) {
                 if (partie.getScore1() > partie.getScore2()) {
                     match.setScore1(match.getScore1() + 1);
                 } else {
@@ -49,7 +50,9 @@ public class PartieController {
 
                 database.modifierMatch(match);
 
-                response = ResponseEntity.ok("La partie a été créé avec succès");
+                System.out.println(createdPartie.getId());
+                String createdPartieID = Integer.toString(createdPartie.getId());
+                response = ResponseEntity.ok(createdPartieID);
             } else {
                 response = ResponseEntity.status(403).body("La partie n'a pas pu être créé");
             }
