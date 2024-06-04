@@ -45,7 +45,9 @@ public class StatistiqueController {
     }
 
     private Statistique creerStatTemp(StatistiqueRequest request) throws RuntimeException {
-        Joueur joueur = database.getJoueurParNom(request.getPseudo(), request.getJeu(), request.getSaison());
+        Jeu jeu = database.getJeuParNom(request.getJeu());
+        Saison saison = database.getSaisonParDebut(request.getSaison());
+        Joueur joueur = database.getJoueurParNom(request.getPseudo(), jeu, saison);
         Partie partie = database.getPartieParId(request.getId_partie());
 
         return new Statistique(request.getDonnee(), joueur, partie);

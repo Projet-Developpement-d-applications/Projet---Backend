@@ -7,8 +7,8 @@ public class StatistiqueRequest {
 
     private String donnee;
     private String pseudo;
-    private Jeu jeu;
-    private Saison saison;
+    private String jeu;
+    private String saison;
     private int id_partie;
 
     public String getDonnee() {
@@ -19,11 +19,11 @@ public class StatistiqueRequest {
         return pseudo;
     }
 
-    public Jeu getJeu() {
+    public String getJeu() {
         return jeu;
     }
 
-    public Saison getSaison() {
+    public String getSaison() {
         return saison;
     }
 
