@@ -64,6 +64,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             new WebAuthenticationDetailsSource().buildDetails(request));
 
                     SecurityContextHolder.getContext().setAuthentication(authToken);
+                } else {
+                    Cookie cookie = new Cookie(COOKIE_NAME, token);
+                    cookie.setPath("/");
+                    cookie.setHttpOnly(true);
+                    cookie.setSecure(true);
+                    cookie.setMaxAge(0);
+                    response.addCookie(cookie);
+                    response.setHeader("Set-Cookie", String.format(
+                            "%s=%s; Expires=%s; Max-Age=%d; Path=/; HttpOnly; Secure; SameSite=None",
+                            cookie.getName(),
+                            cookie.getValue(),
+                            Integer.toString(0),
+                            cookie.getMaxAge()
+                    ));
                 }
 
             }
