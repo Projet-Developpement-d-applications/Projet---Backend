@@ -35,7 +35,7 @@ public class AuthController {
     }
 
     @GetMapping("/connexionStatus")
-    public ResponseEntity<Boolean> connexionStatus(HttpServletRequest request) {
+    public ResponseEntity<Boolean> connexionStatus(HttpServletRequest request, HttpServletResponse servletResponse) {
         ResponseEntity<Boolean> response = ResponseEntity.ok(false);
 
         String token = null;
@@ -48,6 +48,16 @@ public class AuthController {
 
             if (authService.checkConnexion(token)) {
                 response = ResponseEntity.ok(true);
+            } else {
+                Cookie cookie = createCookie(null, 0);
+                servletResponse.addCookie(cookie);
+                servletResponse.setHeader("Set-Cookie", String.format(
+                        "%s=%s; Expires=%s; Max-Age=%d; Path=/; HttpOnly; Secure; SameSite=None",
+                        cookie.getName(),
+                        cookie.getValue(),
+                        Integer.toString(0),
+                        cookie.getMaxAge()
+                ));
             }
         }
 
