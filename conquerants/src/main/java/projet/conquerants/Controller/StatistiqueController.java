@@ -31,6 +31,7 @@ public class StatistiqueController {
 
         try {
             Statistique statistique = database.createStat(creerStatTemp(request));
+
             if (statistique != null) {
                 response = ResponseEntity.ok("La statistique a bien été créée");
             } else {
@@ -46,10 +47,6 @@ public class StatistiqueController {
     private Statistique creerStatTemp(StatistiqueRequest request) throws RuntimeException {
         Joueur joueur = database.getJoueurParNom(request.getPseudo(), request.getJeu(), request.getSaison());
         Partie partie = database.getPartieParId(request.getId_partie());
-
-        System.out.println(joueur);
-        System.out.println(partie);
-        System.out.println(request.getDonnee());
 
         return new Statistique(request.getDonnee(), joueur, partie);
     }
