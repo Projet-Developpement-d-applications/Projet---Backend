@@ -1,5 +1,8 @@
 package projet.conquerants.Controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -19,6 +22,7 @@ import projet.conquerants.Service.ValidationService;
 public class StatistiqueController {
 
     private DatabaseService database;
+    private Logger logger = LoggerFactory.getLogger(StatistiqueController.class);
 
     @Autowired
     public StatistiqueController(DatabaseService database) {
@@ -26,18 +30,21 @@ public class StatistiqueController {
     }
 
     @PostMapping("/admin/ajouterStatistique")
-    public ResponseEntity<String> ajouterStatistique(@RequestBody StatistiqueRequest request) {
+    public ResponseEntity<String> ajouterStatistique(@RequestBody StatistiqueRequest request, HttpServletRequest servletRequest) {
         ResponseEntity<String> response = null;
 
         try {
             Statistique statistique = database.createStat(creerStatTemp(request));
 
             if (statistique != null) {
+                logger.info("Statistique creer avec succes par " + servletRequest.getRemoteAddr());
                 response = ResponseEntity.ok("La statistique a bien été créée");
             } else {
+                logger.warn("Echec creation statistique par " + servletRequest.getRemoteAddr());
                 ResponseEntity.status(403).body("La statistique n'a pas pu être créée");
             }
         } catch (ManqueInfoException e) {
+            logger.warn("Echec creation statistique (wrong info) par " + servletRequest.getRemoteAddr());
             response = ResponseEntity.status(403).body("Les informations fournies ne sont pas valides");
         }
 
