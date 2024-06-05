@@ -115,27 +115,6 @@ public class JoueurController {
         return response;
     }
 
-    @PostMapping("/admin/creerJoueurs")
-    public ResponseEntity<String> creerJoueurs(@RequestBody List<JoueurRequest> request) {
-        ResponseEntity<String> response = null;
-        try {
-            int rowCreated = database.createJoueurs(creerJoueursTemp(request)).size();
-            if (rowCreated > 0) {
-                response = ResponseEntity.ok(rowCreated + "/" + request.size() + " joueurs créés");
-            } else {
-                response = ResponseEntity.status(403).body("Aucun joueur n'a pu être créé");
-            }
-        } catch (ExisteDejaException e) {
-            response = ResponseEntity.status(403).body("Un joueur avec ce pseudo existe déjà pour ce jeu et cette saison");
-        } catch (ExistePasException e) {
-            response = ResponseEntity.status(403).body("Le joueur que vous souhaitez modifié n'existe pas");
-        } catch (ManqueInfoException e) {
-            response = ResponseEntity.status(403).body("Les informations fournies ne sont pas valides");
-        }
-
-        return response;
-    }
-
     @PutMapping("/admin/modifierJoueur")
     public ResponseEntity<String> modifierJoueur(@RequestBody JoueurRequest request, HttpServletRequest servletRequest) {
         ResponseEntity<String> response = null;
@@ -164,28 +143,6 @@ public class JoueurController {
         return response;
     }
 
-    @PutMapping("/admin/modifierJoueurs")
-    public ResponseEntity<String> modifierJoueurs(@RequestBody List<JoueurRequest> request) {
-        ResponseEntity<String> response = null;
-
-        try {
-            int rowModified = database.modifyJoueurs(modifierJoueursTemp(request)).size();
-            if (rowModified > 0) {
-                response = ResponseEntity.ok(rowModified + "/" + request.size() + " joueurs modifiés");
-            } else {
-                response = ResponseEntity.status(403).body("Aucun joueur n'a pu être créé");
-            }
-        } catch (ExisteDejaException e) {
-            response = ResponseEntity.status(403).body("Un joueur avec ce pseudo existe déjà pour ce jeu et cette saison");
-        } catch (ExistePasException e) {
-            response = ResponseEntity.status(403).body("Le joueur que vous souhaitez modifié n'existe pas");
-        } catch (ManqueInfoException e) {
-            response = ResponseEntity.status(403).body("Les informations fournies ne sont pas valides");
-        }
-
-        return response;
-    }
-
     private Joueur creerJoueurTemp(JoueurRequest request) throws RuntimeException {
         Jeu jeu = database.getJeuParNom(request.getJeu());
         Saison saison = database.getSaisonParDebut(request.getSaison());
@@ -199,15 +156,6 @@ public class JoueurController {
 
         return new Joueur(request.getPrenom(), request.getNom(), request.getPseudo(),
                 date, position, equipe, jeu, saison);
-    }
-
-    private List<Joueur> creerJoueursTemp(List<JoueurRequest> request) throws RuntimeException {
-        List<Joueur> joueursTemp = new ArrayList<>();
-        for (JoueurRequest jr : request) {
-            joueursTemp.add(creerJoueurTemp(jr));
-        }
-
-        return joueursTemp;
     }
 
     private Joueur modifierJoueurTemp(JoueurRequest request) throws RuntimeException {

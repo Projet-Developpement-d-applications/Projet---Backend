@@ -59,6 +59,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     UserDetails userDetails = userDetailsImp.loadUserByUsername(username);
 
                     if (jwtService.isValid(token, userDetails)) {
+                        logger.info("Token is valid");
                         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                                 userDetails, null, userDetails.getAuthorities());
 
@@ -72,7 +73,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
             filterChain.doFilter(request, response);
-            logger.info("Token is valid");
             
         } catch (Exception e) {
             logger.warn("Token is invalid");
