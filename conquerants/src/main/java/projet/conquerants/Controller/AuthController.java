@@ -126,7 +126,7 @@ public class AuthController {
                     "%s=%s; Expires=%s; Max-Age=%d; Path=/; HttpOnly; Secure; SameSite=None",
                     cookie.getName(),
                     cookie.getValue(),
-                    Integer.toString(30 * 24 * 60 * 60),
+                    Integer.toString(COOKIE_EXPIRATION),
                     cookie.getMaxAge()
             ));
 
