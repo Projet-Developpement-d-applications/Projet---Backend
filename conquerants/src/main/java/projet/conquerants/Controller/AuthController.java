@@ -26,7 +26,7 @@ public class AuthController {
 
     private AuthService authService;
     private final String COOKIE_NAME = "token";
-    private final int COOKIE_EXPIRATION = (30 * 24 * 60 * 60);
+    private final int COOKIE_EXPIRATION = (7 * 24 * 60 * 60);
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
