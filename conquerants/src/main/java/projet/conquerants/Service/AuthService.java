@@ -58,7 +58,7 @@ public class AuthService {
         String mdp = rsaDecoderService.decrypt(request.getMot_passe());
 
         validePseudoExistePas(request.getPseudo());
-        valideInfoInscription(request);
+        valideInfoInscription(request, mdp);
 
         Utilisateur utilisateur = new Utilisateur(request.getPrenom(), request.getNom(), request.getPseudo(),
                 passwordEncoder.encode(mdp), databaseService.getDefaultRole());
@@ -98,9 +98,9 @@ public class AuthService {
         }
     }
 
-    public void valideInfoInscription(InscriptionRequest request) throws ManqueInfoException {
+    public void valideInfoInscription(InscriptionRequest request, String mdp) throws ManqueInfoException {
         if (!validation.valideStringOfChar(request.getPrenom()) || !validation.valideStringOfChar(request.getNom()) ||
-                !validation.valideStringOfCharAndDigits(request.getPseudo()) || !validation.validePasswordString(request.getMot_passe())) {
+                !validation.valideStringOfCharAndDigits(request.getPseudo()) || !validation.validePasswordString(mdp)) {
             throw new ManqueInfoException();
         }
     }
