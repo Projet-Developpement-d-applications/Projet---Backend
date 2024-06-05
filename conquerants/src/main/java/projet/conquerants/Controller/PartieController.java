@@ -1,6 +1,9 @@
 package projet.conquerants.Controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.coyote.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +22,7 @@ import java.util.List;
 public class PartieController {
 
     private DatabaseService database;
+    private Logger logger = LoggerFactory.getLogger(PartieController.class);
 
     @Autowired
     public PartieController(DatabaseService database) {
@@ -26,7 +30,7 @@ public class PartieController {
     }
 
     @PostMapping("/admin/ajouterPartie")
-    public ResponseEntity<String> ajouterPartie(@RequestBody PartieRequest request) {
+    public ResponseEntity<String> ajouterPartie(@RequestBody PartieRequest request, HttpServletRequest servletRequest) {
         ResponseEntity<String> response = null;
 
         try {
@@ -52,13 +56,17 @@ public class PartieController {
 
                 System.out.println(createdPartie.getId());
                 String createdPartieID = Integer.toString(createdPartie.getId());
+                logger.info("Partie creer avec succes par " + servletRequest.getRemoteAddr());
                 response = ResponseEntity.ok(createdPartieID);
             } else {
+                logger.warn("Echec creation partie par " + servletRequest.getRemoteAddr());
                 response = ResponseEntity.status(403).body("La partie n'a pas pu être créé");
             }
         } catch (ManqueInfoException e) {
+            logger.warn("Echec creation partie (wrong info) par " + servletRequest.getRemoteAddr());
             response = ResponseEntity.status(403).body("Les informations fournies ne sont pas valides");
         } catch (ExistePasException e) {
+            logger.warn("Echec creation partie (aucun match) par " + servletRequest.getRemoteAddr());
             response = ResponseEntity.status(403).body("Le match auquel vous souhaitez ajouter cette partie n'existe pas");
         }
 
@@ -66,7 +74,7 @@ public class PartieController {
     }
 
     @PutMapping("/admin/modifierPartie")
-    public ResponseEntity<String> modiferPartie(@RequestBody PartieRequest request) {
+    public ResponseEntity<String> modiferPartie(@RequestBody PartieRequest request, HttpServletRequest servletRequest) {
         ResponseEntity<String> response = null;
 
         try {
@@ -81,13 +89,17 @@ public class PartieController {
             partie.setScore2(request.getScore2());
 
             if (database.modifierPartie(partie) != null) {
+                logger.info("Partie modifier avec succes par " + servletRequest.getRemoteAddr());
                 response = ResponseEntity.ok("La partie a été modifié avec succès");
             } else {
+                logger.warn("Echec modification partie par " + servletRequest.getRemoteAddr());
                 response = ResponseEntity.status(403).body("La partie n'a pas pu être modifié");
             }
         } catch (ManqueInfoException e) {
+            logger.warn("Echec modification partie (wrong info) par " + servletRequest.getRemoteAddr());
             response = ResponseEntity.status(403).body("Les informations fournies ne sont pas valides");
         } catch (ExistePasException e) {
+            logger.warn("Echec modification partie (existe pas) par " + servletRequest.getRemoteAddr());
             response = ResponseEntity.status(403).body("Le partie que vous souhaitez modifié n'existe pas");
         }
 

@@ -28,6 +28,7 @@ public class UtilisateurController {
     private PasswordEncoder passwordEncoder;
     private ValidationService validationService;
     private RSADecoderService rsaDecoderService;
+    private Logger logger = LoggerFactory.getLogger(UtilisateurController.class);
 
     @Autowired
     public UtilisateurController(DatabaseService database, JwtService jwtService, PasswordEncoder passwordEncoder,
@@ -82,24 +83,31 @@ public class UtilisateurController {
                                 utilisateur.setMotPasse(passwordEncoder.encode(nouveauMdp));
 
                                 if (database.modifierUtilisateur(utilisateur) != null) {
+                                    logger.info("Modification du mdp pour " + utilisateur.getPseudo() + " par " + request.getRemoteAddr());
                                     retour = ResponseEntity.ok("Votre mot de passe a bien été modifié.");
                                 } else {
+                                    logger.warn("Echec modification du mdp pour " + utilisateur.getPseudo() + " par " + request.getRemoteAddr());
                                     retour = ResponseEntity.status(403).body("Le mot de passe n'a pu être modifié.");
                                 }
                             } else {
+                                logger.warn("Echec modification du mdp (bad mdp) pour " + utilisateur.getPseudo() + " par " + request.getRemoteAddr());
                                 retour = ResponseEntity.status(403).body("Vous n'avez pas entré le bon mot de passe.");
                             }
                         } else {
+                            logger.warn("Echec modification du mdp (nouveau pas conforme) pour " + utilisateur.getPseudo() + " par " + request.getRemoteAddr());
                             retour = ResponseEntity.status(403).body("Votre nouveau mot de passe ne respecte pas les critères");
                         }
                     } else {
+                        logger.warn("Echec modification du mdp (nouveau = ancien) pour " + utilisateur.getPseudo() + " par " + request.getRemoteAddr());
                         retour = ResponseEntity.status(403).body("Votre nouveau mot de passe n'est pas différent de l'ancien");
                     }
                 } catch (Exception e) {
+                    logger.warn("Echec modification du mdp (wrong info) pour " + utilisateur.getPseudo() + " par " + request.getRemoteAddr());
                     retour = ResponseEntity.status(403).body("Vous n'avez pas envoyé des informations valides.");
                     e.printStackTrace();
                 }
             } else {
+                logger.warn("Echec modification du mdp (bad auth) pour " + utilisateur.getPseudo() + " par " + request.getRemoteAddr());
                 retour = ResponseEntity.status(401).body("Vous n'êtes pas authentifié correctement.");
             }
         }

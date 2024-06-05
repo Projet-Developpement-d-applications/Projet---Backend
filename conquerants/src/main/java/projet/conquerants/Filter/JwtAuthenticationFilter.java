@@ -26,6 +26,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private JwtService jwtService;
     private UserDetailsServiceImpl userDetailsImp;
     private final String COOKIE_NAME = "token";
+    private Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
     @Autowired
     public JwtAuthenticationFilter(JwtService jwtService, UserDetailsServiceImpl userDetailsImp) {
@@ -71,8 +72,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
             filterChain.doFilter(request, response);
+            logger.info("Token is valid");
             
         } catch (Exception e) {
+            logger.warn("Token is invalid");
+
             Cookie cookie = new Cookie(COOKIE_NAME, null);
             cookie.setPath("/");
             cookie.setHttpOnly(true);

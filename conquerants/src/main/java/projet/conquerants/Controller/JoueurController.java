@@ -1,5 +1,8 @@
 package projet.conquerants.Controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +27,7 @@ public class JoueurController {
 
     private DatabaseService database;
     private ValidationService validation;
+    private Logger logger = LoggerFactory.getLogger(JoueurController.class);
 
     @Autowired
     public JoueurController(DatabaseService database, ValidationService validation) {
@@ -88,19 +92,23 @@ public class JoueurController {
     }
 
     @PostMapping("/admin/creerJoueur")
-    public ResponseEntity<String> creerJoueur(@RequestBody JoueurRequest request) {
+    public ResponseEntity<String> creerJoueur(@RequestBody JoueurRequest request, HttpServletRequest servletRequest) {
         ResponseEntity<String> response = null;
 
         try {
             Joueur joueur = database.createJoueur(creerJoueurTemp(request));
             if (joueur != null) {
+                logger.info("Joueur creer avec succes par " + servletRequest.getRemoteAddr());
                 response = ResponseEntity.ok("Le joueur a bien été créé");
             } else {
+                logger.warn("Echec creation joueur par " + servletRequest.getRemoteAddr());
                 ResponseEntity.status(403).body("Le joueur n'a pas pu être créé");
             }
         } catch (ExisteDejaException e) {
+            logger.warn("Echec creation joueur (existe deja) par " + servletRequest.getRemoteAddr());
             response = ResponseEntity.status(403).body("Un joueur avec ce pseudo existe déjà pour ce jeu et cette saison");
         } catch (ManqueInfoException e) {
+            logger.warn("Echec creation joueur (wrong info) par " + servletRequest.getRemoteAddr());
             response = ResponseEntity.status(403).body("Les informations fournies ne sont pas valides");
         }
 
@@ -129,21 +137,26 @@ public class JoueurController {
     }
 
     @PutMapping("/admin/modifierJoueur")
-    public ResponseEntity<String> modifierJoueur(@RequestBody JoueurRequest request) {
+    public ResponseEntity<String> modifierJoueur(@RequestBody JoueurRequest request, HttpServletRequest servletRequest) {
         ResponseEntity<String> response = null;
 
         try {
             Joueur joueur = database.modifyJoueur(modifierJoueurTemp(request));
             if (joueur != null) {
+                logger.info("Joueur modifier avec succes par " + servletRequest.getRemoteAddr());
                 response = ResponseEntity.ok("Le joueur a bien été modifié");
             } else {
+                logger.warn("Echec modificiation joueur par " + servletRequest.getRemoteAddr());
                 ResponseEntity.status(403).body("Le joueur n'a pas pu être modifié");
             }
         } catch (ExisteDejaException e) {
+            logger.warn("Echec modificiation joueur (existe deja) par " + servletRequest.getRemoteAddr());
             response = ResponseEntity.status(403).body("Un joueur avec ce pseudo existe déjà pour ce jeu et cette saison");
         } catch (ExistePasException e) {
+            logger.warn("Echec modificiation joueur (existe pas) par " + servletRequest.getRemoteAddr());
             response = ResponseEntity.status(403).body("Le joueur que vous souhaitez modifié n'existe pas");
         } catch (ManqueInfoException e) {
+            logger.warn("Echec modificiation joueur (wrong info) par " + servletRequest.getRemoteAddr());
             response = ResponseEntity.status(403).body("Les informations fournies ne sont pas valides");
         }
 

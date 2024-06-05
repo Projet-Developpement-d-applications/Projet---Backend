@@ -2,6 +2,8 @@ package projet.conquerants.Controller;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +25,7 @@ public class MatchController {
 
     private DatabaseService database;
     private JwtService jwtService;
+    private Logger logger = LoggerFactory.getLogger(MatchController.class);
 
     @Autowired
     public MatchController(DatabaseService database, JwtService jwtService) {
@@ -91,7 +94,7 @@ public class MatchController {
     }
 
     @PostMapping("/admin/nouveauMatch")
-    public ResponseEntity<String> nouveauMatch(@RequestBody MatchRequest request) {
+    public ResponseEntity<String> nouveauMatch(@RequestBody MatchRequest request, HttpServletRequest servletRequest) {
         ResponseEntity<String> response = null;
 
         try {
@@ -107,13 +110,17 @@ public class MatchController {
                     equipe1, equipe2);
 
             if (database.createMatch(match) != null) {
+                logger.info("Match creer avec succes par " + servletRequest.getRemoteAddr());
                 response = ResponseEntity.ok("Le match a bien été créé");
             } else {
+                logger.warn("Echec creation match par " + servletRequest.getRemoteAddr());
                 response = ResponseEntity.status(403).body("Le match n'a pas pu être créé");
             }
         } catch (ManqueInfoException e) {
+            logger.warn("Echec creation match (wrong info) par " + servletRequest.getRemoteAddr());
             response = ResponseEntity.status(403).body("Les informations fournies ne sont pas valides");
         } catch (ExisteDejaException e) {
+            logger.warn("Echec creation match (existe deja) par " + servletRequest.getRemoteAddr());
             response = ResponseEntity.status(403).body("Un match existe déjà à cette date");
         }
 
@@ -121,7 +128,7 @@ public class MatchController {
     }
 
     @PutMapping("/admin/modifierMatch")
-    public ResponseEntity<String> modifierMatch(@RequestBody MatchRequest request) {
+    public ResponseEntity<String> modifierMatch(@RequestBody MatchRequest request, HttpServletRequest servletRequest) {
         ResponseEntity<String> response = null;
 
         try {
@@ -151,14 +158,18 @@ public class MatchController {
                     setPredictionVote(match);
                 }
 
+                logger.info("Match modifier avec succes par " + servletRequest.getRemoteAddr());
                 response = ResponseEntity.ok("Le match a bien été modifié");
 
             } else {
+                logger.warn("Echec modification match par " + servletRequest.getRemoteAddr());
                 response = ResponseEntity.status(403).body("Le match n'a pas pu être modifié");
             }
         } catch (ManqueInfoException e) {
+            logger.warn("Echec modification match (wrong info) par " + servletRequest.getRemoteAddr());
             response = ResponseEntity.status(403).body("Les informations fournies ne sont pas valides");
         } catch (ExistePasException e) {
+            logger.warn("Echec modification match (existe pas) par " + servletRequest.getRemoteAddr());
             response = ResponseEntity.status(403).body("Le match que vous recherchez n'existe pas");
         }
 

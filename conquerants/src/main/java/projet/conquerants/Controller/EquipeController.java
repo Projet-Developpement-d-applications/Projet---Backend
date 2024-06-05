@@ -1,5 +1,8 @@
 package projet.conquerants.Controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +25,7 @@ public class EquipeController {
 
     private DatabaseService database;
     private ValidationService validation;
+    private Logger logger = LoggerFactory.getLogger(EquipeController.class);
 
     @Autowired
     public EquipeController(DatabaseService database, ValidationService validation) {
@@ -87,19 +91,23 @@ public class EquipeController {
     }
 
     @PostMapping("/admin/creerEquipe")
-    public ResponseEntity<String> creerEquipe(@RequestBody EquipeRequest request) {
+    public ResponseEntity<String> creerEquipe(@RequestBody EquipeRequest request, HttpServletRequest servletRequest) {
         ResponseEntity<String> response = null;
 
         try {
             Equipe result = database.createEquipe(creerEquipeTemp(request));
             if (result != null) {
+                logger.info("Equipe creer avec succes par " + servletRequest.getRemoteAddr());
                 response = ResponseEntity.ok("Équipe créé avec succès");
             } else {
+                logger.warn("Echec creation equipe par " + servletRequest.getRemoteAddr());
                 response = ResponseEntity.status(403).body("L'équipe n'a pas pu être créé");
             }
         } catch (ExisteDejaException e) {
+            logger.warn("Echec creation equipe (existe deja) par " + servletRequest.getRemoteAddr());
             response = ResponseEntity.status(403).body("Une équipe avec ce nom existe déjà pour ce jeu et cette saison");
         } catch (ManqueInfoException e) {
+            logger.warn("Echec creation equipe (wrong info) par " + servletRequest.getRemoteAddr());
             response = ResponseEntity.status(403).body("Les informations fournies ne sont pas valides");
         }
 
@@ -107,21 +115,26 @@ public class EquipeController {
     }
 
     @PutMapping("/admin/modifierEquipe")
-    public ResponseEntity<String> modifierEquipe(@RequestBody EquipeRequest request) {
+    public ResponseEntity<String> modifierEquipe(@RequestBody EquipeRequest request, HttpServletRequest servletRequest) {
         ResponseEntity<String> response = null;
 
         try {
             Equipe result = database.modifyEquipe(modifierEquipeTemp(request));
             if (result != null) {
+                logger.info("Modification equipe avec succes par " + servletRequest.getRemoteAddr());
                 response = ResponseEntity.ok("Équipe modifié avec succès");
             } else {
+                logger.warn("Echec modification equipe par " + servletRequest.getRemoteAddr());
                 response = ResponseEntity.status(403).body("L'équipe n'a pas pu être modifié");
             }
         } catch (ExisteDejaException e) {
+            logger.warn("Echec modification equipe (existe deja) par " + servletRequest.getRemoteAddr());
             response = ResponseEntity.status(403).body("Une équipe avec ce nom existe déjà pour ce jeu et cette saison");
         } catch (ExistePasException e) {
+            logger.warn("Echec modification equipe (aucune equipe pour id) par " + servletRequest.getRemoteAddr());
             response = ResponseEntity.status(403).body("Aucune équipe correspondant à cet id");
         } catch (ManqueInfoException e) {
+            logger.warn("Echec modification equipe (wrong info) par " + servletRequest.getRemoteAddr());
             response = ResponseEntity.status(403).body("Les informations fournies ne sont pas valides");
         }
 
