@@ -25,4 +25,8 @@ public class Statistique {
         this.joueur = joueur;
         this.partie = partie;
     }
+
+    public String getDonnee() {
+        return donnee;
+    }
 }
