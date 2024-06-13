@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import projet.conquerants.Exception.ManqueInfoException;
@@ -20,7 +21,11 @@ import projet.conquerants.Model.Response.ExceptionResponse;
 import projet.conquerants.Model.Response.IResponse;
 import projet.conquerants.Model.Response.AuthResponse;
 import projet.conquerants.Service.AuthService;
-import projet.conquerants.Service.RSADecoderService;
+
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 
 @RestController
 @CrossOrigin(origins = {"http://localhost:3000", "https://projet-web-acac.vercel.app"}, allowCredentials = "true")
@@ -52,7 +57,6 @@ public class AuthController {
             if (authService.checkConnexion(token)) {
                 response = ResponseEntity.ok(true);
                 logger.info("Check status approuvé pour " + request.getRemoteAddr());
-
             } else {
                 logger.info("Check status reffusé pour " + request.getRemoteAddr());
 
@@ -71,10 +75,8 @@ public class AuthController {
         return response;
     }
 
-    @GetMapping("deconnexion")
+    @GetMapping("/deconnexion")
     public ResponseEntity<String> deconnexion(HttpServletResponse servletResponse, HttpServletRequest request) {
-        ResponseEntity<String> response = null;
-
         logger.info("Deconnexion de " + request.getRemoteAddr());
 
         Cookie cookie = createCookie(null, 0);
@@ -90,7 +92,7 @@ public class AuthController {
         return ResponseEntity.ok("Vous avez été deconnecté");
     }
 
-    @GetMapping("refreshConnexion")
+    @GetMapping("/refreshConnexion")
     public ResponseEntity<IResponse> refreshConnexion(HttpServletResponse servletResponse, HttpServletRequest request) {
         ResponseEntity<IResponse> response = null;
 
@@ -186,6 +188,35 @@ public class AuthController {
         }
 
         return response;
+    }
+
+    @Value("${spring.security.oauth2.client.registration.facebook.client-id}")
+    private String clientId;
+
+    @Value("${spring.security.oauth2.client.registration.facebook.redirect-uri}")
+    private String redirectUri;
+
+    @GetMapping("/oauth2/authorization/facebook")
+    public void facebookOAuth2(HttpServletResponse response) throws IOException {
+        String state = UUID.randomUUID().toString(); // Generate a random state
+        String facebookOAuthUrl = "https://www.facebook.com/v12.0/dialog/oauth" +
+                "?client_id=" + clientId +
+                "&redirect_uri=" + URLEncoder.encode(redirectUri, StandardCharsets.UTF_8) +
+                "&scope=email" +
+                "&state=" + state +
+                "&response_type=code"; // Include response_type=code for OAuth2
+
+        // Store the state in the session or a secure location for validation later
+
+        response.sendRedirect(facebookOAuthUrl);
+    }
+
+    @GetMapping("/login/oauth2/code/facebook")
+    public String facebookOAuth2Callback(@RequestParam("code") String code, @RequestParam("state") String state) {
+        // Validate state to prevent CSRF
+
+        // Handle OAuth2 callback from Facebook
+        return "redirect:/"; // Redirect to your home page or any other endpoint after successful authentication
     }
 
     private Cookie createCookie(String token, int expiration) {

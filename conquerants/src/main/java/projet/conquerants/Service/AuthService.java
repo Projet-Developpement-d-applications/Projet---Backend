@@ -1,6 +1,5 @@
 package projet.conquerants.Service;
 
-import org.bouncycastle.crypto.engines.RSAEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,8 +7,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Service;
-import projet.conquerants.Controller.AuthController;
 import projet.conquerants.Exception.ManqueInfoException;
 import projet.conquerants.Exception.MauvaisMotPasseException;
 import projet.conquerants.Exception.ExisteDejaException;
@@ -18,6 +17,8 @@ import projet.conquerants.Model.Request.ConnexionRequest;
 import projet.conquerants.Model.Response.AuthenticationResponse;
 import projet.conquerants.Model.Utilisateur;
 import projet.conquerants.Model.Request.InscriptionRequest;
+
+import java.util.Optional;
 
 @Service
 public class AuthService {
@@ -109,5 +110,27 @@ public class AuthService {
         }
     }
 
+/*    public String generateTokenFromOAuth2(OAuth2AuthenticationToken authentication) {
+        String prenom = (String) authentication.getPrincipal().getAttributes().get("email");
+        String nom = (String) authentication.getPrincipal().getAttributes().get("name");
 
+        // Attempt to fetch the user from database based on pseudo (username)
+        Optional<Utilisateur> utilisateurOptional = databaseService.getUtilisateur(pseudo);
+
+        if (utilisateurOptional.isEmpty()) {
+            // Create a new user with random password for OAuth2 users
+            String randomPassword = generateRandomPassword(); // Implement this method
+            Utilisateur newUtilisateur = new Utilisateur(prenom, nom, pseudo,
+                    passwordEncoder.encode(randomPassword), databaseService.getDefaultRole());
+            utilisateurOptional = Optional.ofNullable(databaseService.createUtilisateur(newUtilisateur));
+        }
+
+        // Generate JWT token for the user
+        return utilisateurOptional.map(utilisateur -> jwtService.generateToken(utilisateur))
+                .orElseThrow(() -> new RuntimeException("Failed to generate token")); // Handle the case where utilisateurOptional is empty
+    }
+
+    private String generateRandomPassword() {
+        return "Soleil01";
+    }*/
 }
