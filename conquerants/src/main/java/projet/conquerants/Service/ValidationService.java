@@ -48,6 +48,19 @@ public class ValidationService {
         return isValid;
     }
 
+    public boolean valideEmail(String value) {
+        boolean isValid = false;
+        String regex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(value);
+
+        if (!value.isEmpty() && matcher.matches()) {
+            isValid = true;
+        }
+
+        return isValid;
+    }
+
     public boolean valideStringOfCharAndDigitsWithSpace(String value) {
         boolean isValid = false;
         String regex = "[\\p{L} \\p{M}\\p{Nd}]+";

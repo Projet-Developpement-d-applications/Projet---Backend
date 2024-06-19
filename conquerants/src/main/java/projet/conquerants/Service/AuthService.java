@@ -104,7 +104,7 @@ public class AuthService {
 
     public void valideInfoInscription(InscriptionRequest request, String mdp) throws ManqueInfoException {
         if (!validation.valideStringOfChar(request.getPrenom()) || !validation.valideStringOfChar(request.getNom()) ||
-                !validation.valideStringOfCharAndDigits(request.getPseudo()) || !validation.validePasswordString(mdp)) {
+                !validation.valideEmail(request.getPseudo()) || !validation.validePasswordString(mdp)) {
             throw new ManqueInfoException();
         }
     }

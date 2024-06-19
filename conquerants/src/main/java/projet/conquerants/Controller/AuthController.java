@@ -146,7 +146,7 @@ public class AuthController {
             response = ResponseEntity.ok(new AuthResponse(rep.getRole(), rep.getPseudo()));
         } catch (ExistePasException | MauvaisMotPasseException e) {
             logger.warn("Échec de login (bad credentials) pour " + request.getRemoteAddr());
-            response = ResponseEntity.status(403).body(new ExceptionResponse("Le pseudonyme ou le mot de passe est invalide"));
+            response = ResponseEntity.status(403).body(new ExceptionResponse("L'adresse mail ou le mot de passe est invalide"));
         } catch (Exception e) {
             logger.warn("Échec de login (wrong info) pour " + request.getRemoteAddr());
             response = ResponseEntity.status(403).body(new ExceptionResponse("Les informations fournies ne sont pas conformes"));
@@ -179,7 +179,7 @@ public class AuthController {
             response = ResponseEntity.status(403).body(new ExceptionResponse("Les informations fournies ne sont pas conforme"));
         } catch (ExisteDejaException e) {
             logger.warn("Échec de la tentative d'inscription (email used) pour " + request.getRemoteAddr());
-            response = ResponseEntity.status(403).body(new ExceptionResponse("Ce pseudonyme est déjà utilisé"));
+            response = ResponseEntity.status(403).body(new ExceptionResponse("Cette adresse mail est déjà utilisé"));
         } catch (Exception e) {
             logger.warn("Échec de la tentative d'inscription (wrong info) pour " + request.getRemoteAddr());
             response = ResponseEntity.status(403).body(new ExceptionResponse("Les informations fournies ne sont pas conformes"));
